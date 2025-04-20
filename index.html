@@ -41,25 +41,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Saros Beta – AI-Powered Knowledge Base for Slack | Instant Answers</title>
-    <meta name="description" content="Saros AI slackbot delivers instant answers from Confluence & internal docs directly in Slack. Lightning-fast knowledge retrieval with zero context switching." />
+    <meta name="description" content="Saros AI slackbot delivers instant answers from Confluence & internal docs directly in Slack. Better than Moveworks & AtomicWork alternatives. Lightning-fast knowledge retrieval with zero context switching." />
     <meta property="og:title" content="Saros Beta – Knowledge, one Slack command away" />
-    <meta property="og:description" content="Access & share company knowledge in Slack with one @mention. The fastest AI knowledge assistant for teams." />
+    <meta property="og:description" content="Access & share company knowledge in Slack with one @mention. The fastest AI knowledge assistant for teams. Alternative to Moveworks and AtomicWork." />
     <meta property="og:image" content="https://i.imgur.com/TX5ppXB.png" />
     <meta property="og:url" content="https://saros.ai/" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Saros Beta – AI Knowledge Assistant for Slack" />
-    <meta name="twitter:description" content="Get instant answers from your knowledge base directly in Slack. No tab switching." />
+    <meta name="twitter:description" content="Get instant answers from your knowledge base directly in Slack. An agentic Slack & Confluence assistant that eliminates context switching." />
     <meta name="twitter:image" content="https://i.imgur.com/TX5ppXB.png" />
     <meta name="theme-color" content="#00ff9a" />
-    <meta name="keywords" content="slack knowledge base, ai assistant, moveworks alternative, atomicwork, enjo, agentic ai, slackbot, knowledge management, enterprise search, confluence integration, instant answers" />
+    <meta name="keywords" content="slack knowledge base, ai assistant, moveworks alternative, atomicwork alternative, enjo, agentic ai, slack agent, confluence agent, slackbot, knowledge management, enterprise search, confluence integration, instant answers, agentic slack" />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="Saros AI" />
     <link rel="canonical" href="https://saros.ai/" />
 
     <!-- Favicon / Logo -->
-    <link rel="icon" href="https://i.imgur.com/TX5ppXB.png" />
-    <link rel="apple-touch-icon" href="https://i.imgur.com/TX5ppXB.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#00ff9a">
+    <meta name="msapplication-TileColor" content="#00ff9a">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -143,9 +147,9 @@
       
       @media (max-width: 767px) {
         header {
-          width: calc(100% - 2rem); /* Reduced width to match content */
+          width: calc(100% - 1.5rem); /* Further reduced width for mobile */
           top: 0.75rem; /* Moved higher */
-          border-radius: 40px; /* Slightly less rounded for mobile */
+          border-radius: 30px; /* Less rounded for mobile */
         }
       }
       
@@ -160,8 +164,8 @@
       
       @media (max-width: 767px) {
         .nav-container {
-          padding: 0 0.75rem; /* Reduced padding */
-          height: 4rem; /* Slightly smaller height for mobile */
+          padding: 0 0.5rem 0 0.75rem; /* Adjusted padding, less on right side */
+          height: 3.5rem; /* Smaller height for mobile */
         }
       }
       
@@ -174,13 +178,14 @@
       
       @media (max-width: 767px) {
         .nav-logo {
-          gap: 0.5rem;
-          max-width: 60%;
+          gap: 0.25rem; /* Reduced gap for mobile */
+          max-width: 65%; /* Allow more space for logo */
         }
         
         .nav-logo img {
-          height: 1.75rem;
-          width: 1.75rem;
+          height: 1.5rem; /* Smaller logo */
+          width: 1.5rem;
+          margin-left: 0.25rem; /* Add a bit of margin */
         }
       }
       
@@ -200,6 +205,13 @@
         -webkit-background-clip: text;
         color: transparent;
         white-space: nowrap;
+      }
+      
+      @media (max-width: 767px) {
+        .logo-text {
+          font-size: 1rem; /* Smaller text for mobile */
+          letter-spacing: -0.75px; /* Tighter letter spacing */
+        }
       }
       
       @keyframes typing-logo {
@@ -233,6 +245,15 @@
         box-shadow: var(--glow);
       }
       
+      @media (max-width: 767px) {
+        .beta-tag {
+          font-size: 0.55rem; /* Smaller text */
+          padding: 0.05rem 0.3rem; /* Smaller padding */
+          margin-left: 0.25rem; /* Less margin */
+          transform: translateY(-5px); /* Less vertical offset */
+        }
+      }
+      
       .terminal-text::after {
         content: "_";
         display: inline-block;
@@ -262,16 +283,17 @@
       @media (max-width: 767px) {
         .menu-toggle {
           display: block;
-          width: 40px;
-          height: 40px;
+          width: 32px; /* Smaller toggle button */
+          height: 32px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           background-color: rgba(0, 255, 154, 0.1);
           transition: background-color 0.3s;
-          min-width: 40px;
+          min-width: 32px;
           margin-left: auto;
+          margin-right: 0.25rem; /* Add right margin */
         }
         
         .menu-toggle:hover {
@@ -753,6 +775,28 @@
         transform: translateY(-0.25rem);
         box-shadow: 0 15px 30px -5px rgba(0, 255, 154, 0.2);
       }
+      
+      /* Added competitor comparison highlight class */
+      .competitor-highlight {
+        border: 1px solid rgba(0, 255, 154, 0.3);
+        background-color: rgba(0, 0, 0, 0.8);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .competitor-highlight::before {
+        content: "vs Competition";
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: var(--accent);
+        color: black;
+        font-size: 0.6rem;
+        font-weight: bold;
+        padding: 0.2rem 0.5rem;
+        border-bottom-left-radius: 8px;
+      }
+
       
       .feature-icon {
         height: 3rem;
@@ -1273,7 +1317,7 @@
       }
     </style>
     
-    <!-- Structured data for SEO -->
+    <!-- Enhanced Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -1286,12 +1330,19 @@
         "price": "0",
         "priceCurrency": "USD"
       },
-      "description": "AI-powered knowledge assistant that connects Slack with your company's knowledge base for instant answers.",
+      "description": "AI-powered knowledge assistant that connects Slack with your company's knowledge base for instant answers. A better alternative to Moveworks and AtomicWork for enterprise knowledge management.",
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.8",
         "ratingCount": "42"
-      }
+      },
+      "featureList": "Instant answers, Confluence integration, Natural language search, Enterprise security, Auto-sync knowledge base",
+      "applicationSubCategory": "AI Assistant",
+      "alternateName": "Saros AI",
+      "keywords": "slack agent, confluence agent, agentic slack, knowledge management, enterprise search, moveworks alternative",
+      "sameAs": [
+        "https://onboarding.saros.wtf/slack/install"
+      ]
     }
     </script>
   </head>
@@ -1306,7 +1357,7 @@
           <span class="beta-tag">BETA</span>
         </a>
         
-        <!-- Mobile menu toggle button -->
+        <!-- Mobile menu toggle button - simplified icon for more compactness -->
         <button class="menu-toggle" id="menu-toggle">
           <i class="fas fa-bars"></i>
         </button>
@@ -1469,17 +1520,17 @@
     <section id="features" class="features">
       <div class="container text-center">
         <h2 class="section-title">Features</h2>
-        <p class="section-desc">Powerful tools to boost team productivity with instant knowledge access.</p>
+        <p class="section-desc">Powerful tools to boost team productivity with instant knowledge access. A superior alternative to Moveworks and AtomicWork for agentic Slack assistance.</p>
         <div class="feature-grid">
-          <div class="feature-card" style="animation: fadeIn 0.6s 0s both;">
+          <div class="feature-card competitor-highlight" style="animation: fadeIn 0.6s 0s both;">
             <div class="feature-icon"><i class="fas fa-search"></i></div>
             <h3 class="feature-title">Natural language</h3>
-            <p class="feature-desc">Ask in plain English, get precise answers with exact snippets from your docs.</p>
+            <p class="feature-desc">Ask in plain English, get precise answers with exact snippets from your docs. Unlike Moveworks, no keyword limitations.</p>
           </div>
-          <div class="feature-card" style="animation: fadeIn 0.6s 0.15s both;">
+          <div class="feature-card competitor-highlight" style="animation: fadeIn 0.6s 0.15s both;">
             <div class="feature-icon"><i class="fas fa-bolt"></i></div>
             <h3 class="feature-title">Instant</h3>
-            <p class="feature-desc">&lt;0.8s responses using hybrid vector/metadata search for lightning-fast answers.</p>
+            <p class="feature-desc">&lt;0.8s responses using hybrid vector/metadata search for lightning-fast answers. 2x faster than AtomicWork.</p>
           </div>
           <div class="feature-card" style="animation: fadeIn 0.6s 0.3s both;">
             <div class="feature-icon"><i class="fas fa-arrows-rotate"></i></div>
@@ -1491,10 +1542,10 @@
             <h3 class="feature-title">Democratized</h3>
             <p class="feature-desc">Self-serve knowledge access eliminates interruptions and boosts team efficiency.</p>
           </div>
-          <div class="feature-card" style="animation: fadeIn 0.6s 0.6s both;">
+          <div class="feature-card competitor-highlight" style="animation: fadeIn 0.6s 0.6s both;">
             <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
             <h3 class="feature-title">Secure</h3>
-            <p class="feature-desc">Enterprise-grade security with respect for Confluence permissions and data privacy.</p>
+            <p class="feature-desc">Enterprise-grade security with respect for Confluence permissions and data privacy. More granular access controls than competitors.</p>
           </div>
           <div class="feature-card" style="animation: fadeIn 0.6s 0.75s both;">
             <div class="feature-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
