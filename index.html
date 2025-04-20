@@ -143,8 +143,9 @@
       
       @media (max-width: 767px) {
         header {
-          width: calc(100% - 2.5rem);
-          top: 1rem;
+          width: calc(100% - 2rem); /* Reduced width to match content */
+          top: 0.75rem; /* Moved higher */
+          border-radius: 40px; /* Slightly less rounded for mobile */
         }
       }
       
@@ -159,7 +160,8 @@
       
       @media (max-width: 767px) {
         .nav-container {
-          padding: 0 1rem;
+          padding: 0 0.75rem; /* Reduced padding */
+          height: 4rem; /* Slightly smaller height for mobile */
         }
       }
       
@@ -287,7 +289,7 @@
           top: calc(100% + 10px);
           left: 50%;
           transform: translateX(-50%);
-          width: calc(100% - 20px);
+          width: calc(100% - 2rem); /* Match navbar width */
           flex-direction: column;
           background-color: rgba(0, 0, 0, 0.9);
           border: 1px solid rgba(0, 255, 154, 0.2);
@@ -303,7 +305,7 @@
         }
         
         .nav-links a {
-          padding: 0.75rem 2rem;
+          padding: 1rem 1.5rem; /* Increased touch target */
           width: 100%;
           text-align: center;
           white-space: nowrap;
@@ -373,7 +375,7 @@
       
       @media (max-width: 767px) {
         .hero-container {
-          padding: 0 1.25rem;
+          padding: 0 1rem; /* Consistent padding */
           gap: 3rem;
         }
       }
@@ -465,6 +467,14 @@
         position: relative;
         z-index: 1;
         overflow: hidden;
+      }
+      
+      /* Full width buttons on mobile */
+      @media (max-width: 480px) {
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
       }
       
       .btn-primary {
@@ -688,6 +698,12 @@
         padding: 0 1.5rem;
       }
       
+      @media (max-width: 767px) {
+        .container {
+          padding: 0 1rem; /* Consistent padding */
+        }
+      }
+      
       .text-center {
         text-align: center;
       }
@@ -801,6 +817,13 @@
         gap: 2rem;
         max-width: 1200px; /* Wider grid */
         margin: 0 auto;
+      }
+      
+      @media (max-width: 767px) {
+        .integrations-grid {
+          grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); /* Full width on mobile */
+          padding: 0 1rem; /* Consistent padding */
+        }
       }
       
       @media (min-width: 768px) {
@@ -1021,6 +1044,12 @@
         padding: 0 1.5rem;
       }
       
+      @media (max-width: 767px) {
+        .timeline-content {
+          padding: 0 1rem; /* Consistent padding */
+        }
+      }
+      
       .timeline-title {
         font-size: 2.25rem;
         font-weight: 700;
@@ -1048,6 +1077,12 @@
         text-align: center;
       }
       
+      @media (max-width: 767px) {
+        .cta-container {
+          padding: 0 1rem; /* Consistent padding */
+        }
+      }
+      
       .cta-title {
         font-size: 2.5rem;
         font-weight: 800;
@@ -1069,6 +1104,12 @@
         margin: 0 auto;
         padding: 0 1.5rem;
         text-align: center;
+      }
+      
+      @media (max-width: 767px) {
+        .contact-container {
+          padding: 0 1rem; /* Consistent padding */
+        }
       }
       
       .contact-title {
@@ -1185,6 +1226,50 @@
       .fc-widget .fc-footer .fc-send-button {
         background-color: #00ff9a !important;
         color: #000000 !important;
+      }
+      
+      /* Mobile optimizations - added fixes */
+      @media (max-width: 767px) {
+        /* Mobile hero section adjustments */
+        .hero {
+          padding-top: 10rem; /* Reduced top padding on mobile */
+        }
+        
+        /* Improved Slack examples for mobile */
+        .slack-example {
+          max-width: 100%;
+          margin: 0 auto;
+        }
+        
+        /* Better spacing in timeline for mobile */
+        .timeline-step {
+          gap: 4rem; /* Reduced gap on mobile */
+        }
+        
+        /* Ensure Slack UI sidebar fits on mobile */
+        .slack-example > div:first-child {
+          width: 180px; /* Smaller sidebar on mobile */
+        }
+      }
+      
+      /* Additional mobile fixes */
+      @media (max-width: 480px) {
+        .hero-title {
+          font-size: 2rem; /* Smaller title on very small screens */
+        }
+        
+        .hero-desc {
+          font-size: 1rem; /* Smaller description text */
+        }
+        
+        .button-container {
+          width: 100%; /* Full width container */
+        }
+        
+        /* Stack side-by-side elements on very small screens */
+        [style*="display: flex"] {
+          flex-wrap: wrap;
+        }
       }
     </style>
     
