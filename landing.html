@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saros Knowledge Portal Animation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
+        
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'VT323', monospace;
+            background-color: #000;
+            color: #00ff9a;
+            image-rendering: pixelated;
+        }
+        
+        canvas {
+            display: block;
+        }
+        
+        #title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ff9a;
+            font-size: 50px;
+            letter-spacing: 2px;
+            text-align: center;
+            text-shadow: 0 0 15px #00ff9a;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            z-index: 100;
+            font-family: 'VT323', monospace;
+            image-rendering: pixelated;
+        }
+        
+        #post-portal-title {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ff9a;
+            font-size: 60px;
+            text-align: center;
+            text-shadow: 0 0 15px #00ff9a;
+            opacity: 0;
+            z-index: 100;
+            font-family: 'VT323', monospace;
+            image-rendering: pixelated;
+            letter-spacing: 3px;
+        }
+        
+        #post-portal-subtitle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ff9a;
+            font-size: 26px;
+            text-align: center;
+            text-shadow: 0 0 10px #00ff9a;
+            opacity: 0;
+            z-index: 100;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            font-family: 'VT323', monospace;
+            letter-spacing: 1px;
+        }
+        
+        /* Added button styles */
+        #portal-button {
+            position: absolute;
+            top: 62%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ff9a;
+            font-size: 24px;
+            text-align: center;
+            text-shadow: 0 0 8px #00ff9a;
+            opacity: 0;
+            z-index: 100;
+            font-family: 'VT323', monospace;
+            letter-spacing: 2px;
+            background-color: transparent;
+            border: 3px solid #00ff9a;
+            padding: 10px 25px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 255, 154, 0.5);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+        
+        #portal-button:hover {
+            background-color: rgba(0, 255, 154, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 154, 0.8);
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+        
+        #portal-button:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            background-color: #00ff9a;
+            animation: pixelate-border 2s linear infinite;
+        }
+        
+        @keyframes pixelate-border {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .pixelated {
+            font-family: 'VT323', monospace;
+            -webkit-font-smoothing: none;
+            -moz-osx-font-smoothing: none;
+        }
+        
+        .terminal-cursor {
+            animation: blink 1s step-end infinite;
+            color: #00ff9a;
+        }
+        
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        /* Pixel-mesh overlay */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(0, 255, 154, 0.3) 1.5px, transparent 1.5px);
+            background-size: 8px 8px;
+            mix-blend-mode: screen;
+            animation: flicker 6s steps(60) infinite;
+            z-index: -2;
+            height: 200vh;
+            image-rendering: pixelated;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: .35; }
+            50% { opacity: .55; }
+        }
+    </style>
+</head>
+<body>
+    <div id="title" class="pixelated">Saros</div>
+    <div id="post-portal-title" class="pixelated">Saros</div>
+    <div id="post-portal-subtitle" class="pixelated"></div>
+    <a id="portal-button" class="pixelated" href="https://app.saros-ai.com" target="_blank">Enter Portal</a>
+    
+    <script type="module">
+        import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.159.0/three.module.min.js';
+        
+        let scene, camera, renderer;
+        let animationStarted = false;
+        
+        // Saros branding colors
+        const SAROS_GREEN = 0x00ff9a;
+        const SAROS_GREEN_DARK = 0x00cc7a;
+        const SAROS_GREEN_LIGHT = 0x7affcb;
+        
+        // Start animation automatically when page loads
+        window.addEventListener('load', () => {
+            // Initialize the scene
+            init();
+            
+            // Start the animation loop
+            animate();
+        });
+        
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            scene.fog = new THREE.FogExp2(0x000000, 0.001);
+            
+            // Create camera with POV
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 80);
+            camera.lookAt(0, 0, -100);
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+            
+            // Add ambient light
+            const ambientLight = new THREE.AmbientLight(0x222222);
+            scene.add(ambientLight);
+            
+            // Add directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Create enhanced pixelated background
+            createEnhancedBackground();
+            
+            // Create portal matching the logo
+            createPortal();
+            
+            // Create pixelated data sea with connecting nodes
+            createNodeDataSea();
+            
+            // Hide title until portal passage
+            document.getElementById('title').style.opacity = 0;
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        function createEnhancedBackground() {
+            // Create a pixelated grid for background
+            const pixelGeometry = new THREE.BufferGeometry();
+            const positions = [];
+            const pixelElements = [];
+            
+            const gridSize = 250;
+            const gridSpacing = 8;
+            
+            for (let x = -gridSize; x <= gridSize; x += gridSpacing) {
+                for (let z = -gridSize * 3; z <= gridSize; z += gridSpacing) {
+                    positions.push(x, 0, z);
+                    
+                    pixelElements.push({
+                        x: x,
+                        y: 0,
+                        z: z,
+                        opacity: 0.3 + Math.random() * 0.3,
+                        pulseSpeed: 0.05 + Math.random() * 0.3
+                    });
+                }
+            }
+            
+            pixelGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            
+            const pixelMaterial = new THREE.PointsMaterial({
+                color: SAROS_GREEN,
+                size: 2.5,
+                transparent: true,
+                opacity: 0.6,
+                sizeAttenuation: false
+            });
+            
+            const pixelPoints = new THREE.Points(pixelGeometry, pixelMaterial);
+            pixelPoints.position.y = -20;
+            scene.add(pixelPoints);
+            
+            // Add floating "bytes"
+            const bytesGroup = new THREE.Group();
+            const bytesCount = 200;
+            const bytesElements = [];
+            
+            for (let i = 0; i < bytesCount; i++) {
+                const size = Math.ceil(Math.random() * 2) * 1.0;
+                const byteGeometry = new THREE.BoxGeometry(size, size, size);
+                const byteMaterial = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(
+                        Math.random() > 0.7 ? SAROS_GREEN_LIGHT : 
+                        Math.random() > 0.5 ? SAROS_GREEN : SAROS_GREEN_DARK
+                    ),
+                    transparent: true,
+                    opacity: 0.2 + Math.random() * 0.6
+                });
+                
+                const byte = new THREE.Mesh(byteGeometry, byteMaterial);
+                
+                // Position randomly in the scene
+                byte.position.set(
+                    (Math.random() - 0.5) * 300,
+                    (Math.random() - 0.5) * 150 - 20,
+                    -200 + Math.random() * 250
+                );
+                
+                // Random rotation
+                byte.rotation.set(
+                    Math.random() * Math.PI * 2,
+                    Math.random() * Math.PI * 2,
+                    Math.random() * Math.PI * 2
+                );
+                
+                bytesGroup.add(byte);
+                bytesElements.push({
+                    mesh: byte,
+                    speed: {
+                        x: (Math.random() - 0.5) * 0.1,
+                        y: (Math.random() - 0.5) * 0.1,
+                        z: (Math.random() - 0.5) * 0.1
+                    },
+                    rotate: {
+                        x: (Math.random() - 0.5) * 0.02,
+                        y: (Math.random() - 0.5) * 0.02,
+                        z: (Math.random() - 0.5) * 0.02
+                    }
+                });
+            }
+            
+            scene.add(bytesGroup);
+            
+            // Store for animation
+            window.backgroundPixels = {
+                points: pixelPoints,
+                elements: pixelElements,
+                bytes: bytesElements
+            };
+            
+            // Create grid lines for mesh effect
+            const gridHelper = new THREE.GridHelper(1000, 100, 
+                new THREE.Color(SAROS_GREEN).multiplyScalar(0.15), 
+                new THREE.Color(SAROS_GREEN).multiplyScalar(0.05)
+            );
+            gridHelper.position.y = -30;
+            scene.add(gridHelper);
+        }
+        
+        function createPortal() {
+            // Create a grid-based portal that matches the logo in the image
+            const portalGroup = new THREE.Group();
+            
+            // Create the portal as a grid of points/lines but only the outline, with a hole in the center
+            // This matches the arrow/triangle shape from the logo
+            const portalShape = [
+                // Pixelated right-facing arrow/triangle shape (outline only)
+                // 0=empty, 1=edge point
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0],
+                [0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0],
+                [0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0],
+                [0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+                [0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0],
+                [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0],
+                [0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+                [0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0],
+                [0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0],
+                [0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            ];
+            
+            const gridSize = 2.2; // Size of each grid cell
+            const portalPixels = [];
+            const portalGridLines = [];
+            
+            // Create the portal points and grid lines
+            const pointsGeometry = new THREE.BufferGeometry();
+            const pointsPositions = [];
+            const pointsColors = [];
+            
+            // Create grid lines
+            const gridGroup = new THREE.Group();
+            
+            // First create all points/vertices
+            for (let y = 0; y < portalShape.length; y++) {
+                for (let x = 0; x < portalShape[y].length; x++) {
+                    if (portalShape[y][x] > 0) {
+                        // Calculate position to center the portal
+                        const offsetX = (portalShape[y].length / 2) * gridSize;
+                        const offsetY = (portalShape.length / 2) * gridSize;
+                        
+                        const posX = x * gridSize - offsetX;
+                        const posY = -(y * gridSize - offsetY);
+                        const posZ = -100; // Portal depth
+                        
+                        // Add to points array
+                        pointsPositions.push(posX, posY, posZ);
+                        
+                        // Color based on position
+                        const r = 0.0;
+                        const g = 1.0;
+                        const b = 0.6;
+                        pointsColors.push(r, g, b);
+                        
+                        // Store for animation
+                        portalPixels.push({
+                            x: posX,
+                            y: posY,
+                            z: posZ,
+                            originalZ: posZ,
+                            isEdge: true,
+                            row: y,
+                            col: x,
+                            index: pointsPositions.length / 3 - 1,
+                            pulseSpeed: 0.5 + Math.random() * 2.0,
+                            pulseAmount: 0.2 + Math.random() * 0.6,
+                            blinkSpeed: 0.5 + Math.random() * 3.0,
+                            blinkPhase: Math.random() * Math.PI * 2
+                        });
+                        
+                        // Create grid lines between adjacent points (horizontal and vertical)
+                        if (x < portalShape[y].length - 1 && portalShape[y][x+1] > 0) {
+                            // Horizontal line
+                            const lineGeometry = new THREE.BufferGeometry();
+                            const lineVertices = new Float32Array([
+                                posX, posY, posZ,
+                                posX + gridSize, posY, posZ
+                            ]);
+                            lineGeometry.setAttribute('position', new THREE.BufferAttribute(lineVertices, 3));
+                            
+                            const lineMaterial = new THREE.LineBasicMaterial({
+                                color: new THREE.Color(SAROS_GREEN),
+                                transparent: true,
+                                opacity: 0.6 + Math.random() * 0.4
+                            });
+                            
+                            const line = new THREE.Line(lineGeometry, lineMaterial);
+                            gridGroup.add(line);
+                            
+                            portalGridLines.push({
+                                line: line,
+                                pulseSpeed: 0.5 + Math.random() * 2.0,
+                                blinkSpeed: 0.2 + Math.random() * 1.0,
+                                blinkPhase: Math.random() * Math.PI * 2
+                            });
+                        }
+                        
+                        if (y < portalShape.length - 1 && portalShape[y+1][x] > 0) {
+                            // Vertical line
+                            const lineGeometry = new THREE.BufferGeometry();
+                            const lineVertices = new Float32Array([
+                                posX, posY, posZ,
+                                posX, posY + gridSize, posZ
+                            ]);
+                            lineGeometry.setAttribute('position', new THREE.BufferAttribute(lineVertices, 3));
+                            
+                            const lineMaterial = new THREE.LineBasicMaterial({
+                                color: new THREE.Color(SAROS_GREEN),
+                                transparent: true,
+                                opacity: 0.5 + Math.random() * 0.5
+                            });
+                            
+                            const line = new THREE.Line(lineGeometry, lineMaterial);
+                            gridGroup.add(line);
+                            
+                            portalGridLines.push({
+                                line: line,
+                                pulseSpeed: 0.5 + Math.random() * 2.0,
+                                blinkSpeed: 0.2 + Math.random() * 1.0,
+                                blinkPhase: Math.random() * Math.PI * 2
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Create point material
+            pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(pointsPositions, 3));
+            pointsGeometry.setAttribute('color', new THREE.Float32BufferAttribute(pointsColors, 3));
+            
+            const pointsMaterial = new THREE.PointsMaterial({
+                size: 3.5,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.9
+            });
+            
+            const points = new THREE.Points(pointsGeometry, pointsMaterial);
+            portalGroup.add(points);
+            portalGroup.add(gridGroup);
+            
+            // Add swirling particles around the portal
+            const particleCount = 100; // Reduced count for better performance
+            const particleGeometry = new THREE.BufferGeometry();
+            const particlePositions = [];
+            const particleSizes = [];
+            const noiseParticles = [];
+            
+            for (let i = 0; i < particleCount; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 15 + Math.random() * 20; // Keep particles closer to portal edge
+                
+                // Positions for the swirling particles
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                const z = -100 + (Math.random() * 20 - 10);
+                
+                // Ensure we don't have any NaN values
+                if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+                    particlePositions.push(x, y, z);
+                    particleSizes.push(0.7 + Math.random() * 0.6); // Smaller particles
+                    
+                    noiseParticles.push({
+                        index: i * 3, // Store the index in the position array
+                        angle: angle,
+                        radius: radius,
+                        speed: 0.05 + Math.random() * 0.2, // Slower for smoother motion
+                        offset: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+            
+            particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(particlePositions, 3));
+            particleGeometry.setAttribute('size', new THREE.Float32BufferAttribute(particleSizes, 1));
+            
+            const particleMaterial = new THREE.PointsMaterial({
+                color: SAROS_GREEN_LIGHT,
+                size: 1.5,
+                transparent: true,
+                opacity: 0.7,
+                sizeAttenuation: true
+            });
+            
+            const particles = new THREE.Points(particleGeometry, particleMaterial);
+            portalGroup.add(particles);
+            
+            scene.add(portalGroup);
+            
+            // Store portal elements for animation
+            window.portal = {
+                group: portalGroup,
+                points: points,
+                geometry: pointsGeometry, 
+                pixels: portalPixels,
+                gridLines: portalGridLines,
+                particles: {
+                    points: particles,
+                    geometry: particleGeometry,
+                    elements: noiseParticles
+                }
+            };
+            
+            // Fix for buffer geometry errors - validate noiseParticles indexes
+            const positions = particleGeometry.attributes.position.array;
+            window.portal.particles.elements = window.portal.particles.elements.map((particle, idx) => {
+                return {
+                    ...particle,
+                    index: idx * 3 // Ensure correct index mapping
+                };
+            });
+        }
+        
+        function createNodeDataSea() {
+            // Create data sea with connecting nodes
+            const seaGroup = new THREE.Group();
+            seaGroup.visible = false; // Initially hidden
+            
+            // Create nodes
+            const nodes = [];
+            const totalNodes = 400;
+            const seaWidth = 600;
+            const seaDepth = 800;
+            
+            for (let i = 0; i < totalNodes; i++) {
+                const nodeSize = 1.5 + Math.random() * 2;
+                const nodeGeometry = new THREE.BoxGeometry(nodeSize, nodeSize, nodeSize);
+                
+                const colorVariant = Math.random();
+                let nodeColor;
+                
+                if (colorVariant > 0.7) {
+                    nodeColor = SAROS_GREEN_LIGHT;
+                } else if (colorVariant > 0.3) {
+                    nodeColor = SAROS_GREEN;
+                } else {
+                    nodeColor = SAROS_GREEN_DARK;
+                }
+                
+                const nodeMaterial = new THREE.MeshBasicMaterial({
+                    color: nodeColor,
+                    transparent: true,
+                    opacity: 0
+                });
+                
+                const node = new THREE.Mesh(nodeGeometry, nodeMaterial.clone());
+                
+                // Position in the data sea
+                const x = (Math.random() - 0.5) * seaWidth;
+                const z = -150 - Math.random() * seaDepth;
+                
+                const baseY = Math.sin(x * 0.01) * Math.cos(z * 0.01) * 30;
+                const y = baseY + (Math.random() * 40 - 20);
+                
+                node.position.set(x, y, z);
+                
+                seaGroup.add(node);
+                
+                nodes.push({
+                    mesh: node,
+                    x: x,
+                    y: y,
+                    z: z,
+                    baseY: baseY,
+                    waveSpeed: 0.2 + Math.random() * 0.6,
+                    waveHeight: 3 + Math.random() * 12,
+                    offset: Math.random() * Math.PI * 2
+                });
+            }
+            
+            // Create connections between nodes
+            const connections = [];
+            const lineMaterial = new THREE.LineBasicMaterial({
+                color: SAROS_GREEN,
+                transparent: true,
+                opacity: 0
+            });
+            
+            // Connect nearby nodes
+            for (let i = 0; i < nodes.length; i++) {
+                const connectionCount = Math.floor(Math.random() * 3) + 1; // 1-3 connections per node
+                
+                for (let c = 0; c < connectionCount; c++) {
+                    // Find a nearby node
+                    const nearbyNodes = [];
+                    
+                    for (let j = 0; j < nodes.length; j++) {
+                        if (i !== j) {
+                            const distanceSquared = 
+                                Math.pow(nodes[i].x - nodes[j].x, 2) + 
+                                Math.pow(nodes[i].y - nodes[j].y, 2) + 
+                                Math.pow(nodes[i].z - nodes[j].z, 2);
+                                
+                            if (distanceSquared < 5000) {
+                                nearbyNodes.push({
+                                    index: j,
+                                    distance: Math.sqrt(distanceSquared)
+                                });
+                            }
+                        }
+                    }
+                    
+                    if (nearbyNodes.length > 0) {
+                        // Sort by distance and pick one of the closest nodes
+                        nearbyNodes.sort((a, b) => a.distance - b.distance);
+                        const targetIndex = nearbyNodes[Math.floor(Math.min(3, nearbyNodes.length) * Math.random())].index;
+                        
+                        // Create connection if it doesn't already exist
+                        const connectionExists = connections.some(conn => 
+                            (conn.node1Index === i && conn.node2Index === targetIndex) || 
+                            (conn.node1Index === targetIndex && conn.node2Index === i)
+                        );
+                        
+                        if (!connectionExists) {
+                            const lineGeometry = new THREE.BufferGeometry();
+                            const vertices = new Float32Array([
+                                nodes[i].x, nodes[i].y, nodes[i].z,
+                                nodes[targetIndex].x, nodes[targetIndex].y, nodes[targetIndex].z
+                            ]);
+                            
+                            lineGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+                            const line = new THREE.Line(lineGeometry, lineMaterial.clone());
+                            seaGroup.add(line);
+                            
+                            connections.push({
+                                line: line,
+                                node1: nodes[i],
+                                node2: nodes[targetIndex],
+                                node1Index: i,
+                                node2Index: targetIndex
+                            });
+                        }
+                    }
+                }
+            }
+            
+            scene.add(seaGroup);
+            
+            // Store sea elements for animation
+            window.dataSea = {
+                group: seaGroup,
+                nodes: nodes,
+                connections: connections
+            };
+        }
+        
+        function typeText(element, text, speed, startDelay, callback) {
+            // Don't set opacity until we start typing
+            element.innerHTML = '<span class="terminal-cursor">█</span>';
+            
+            let index = 0;
+            
+            setTimeout(() => {
+                // Now make visible as we start typing
+                element.style.opacity = 1;
+                element.style.width = 'auto';
+                
+                const interval = setInterval(() => {
+                    element.innerHTML = text.substring(0, index) + '<span class="terminal-cursor">█</span>';
+                    index++;
+                    
+                    if (index > text.length) {
+                        clearInterval(interval);
+                        element.innerHTML = text + '<span class="terminal-cursor">█</span>';
+                        if (callback) callback();
+                    }
+                }, speed);
+            }, startDelay);
+        }
+        
+        // Animation phases and variables
+        let animationPhase = 0;
+        let portalTransitionTime = 0;
+        let portalPassed = false;
+        let time = 0;
+        let lastFrameTime = 0;
+        let deltaTime = 0;
+        let animationCompleted = false;
+        
+        // Portal transition variables
+        let portalTransition = {
+            active: false,
+            progress: 0,
+            duration: 0.8,  // Reduced duration for faster transition (was 1.2)
+            startZ: -80,    // Start transition before reaching portal
+            targetZ: -120,  // Target position after portal
+            portalZ: -100,  // Actual portal Z position
+            pullEffect: 0   // Value for pull effect strength
+        };
+        
+        function animate(currentTime) {
+            requestAnimationFrame(animate);
+            
+            // Make sure currentTime is a number
+            if (typeof currentTime !== 'number') {
+                currentTime = performance.now();
+            }
+            
+            // Calculate delta time for smooth animation regardless of frame rate
+            if (lastFrameTime === 0) lastFrameTime = currentTime;
+            deltaTime = (currentTime - lastFrameTime) / 1000; // Convert to seconds
+            lastFrameTime = currentTime;
+            
+            // Cap deltaTime to prevent large jumps if the tab was inactive
+            if (deltaTime > 0.1 || isNaN(deltaTime)) deltaTime = 0.1;
+            
+            time += deltaTime;
+            
+            // Animation phases with reduced timings
+            if (animationPhase === 0 && time > 0.5) { // Reduced from 1
+                // Start portal fade-in
+                animationPhase = 1;
+            } else if (animationPhase === 1 && time > 2) { // Reduced from 4
+                // Start camera movement toward portal
+                animationPhase = 2;
+            } else if (animationPhase === 2 && camera.position.z <= portalTransition.startZ && !portalTransition.active) {
+                // When we're close to the portal, start the special transition 
+                portalTransition.active = true;
+                portalTransition.progress = 0;
+            } else if (portalTransition.active && portalTransition.progress < 1.0) {
+                // Process portal transition
+                portalTransition.progress += deltaTime / portalTransition.duration;
+                
+                if (portalTransition.progress >= 0.5 && !portalPassed) {
+                    // Midway through transition, trigger portal effects
+                    animationPhase = 3;
+                    portalTransitionTime = time;
+                    portalPassed = true;
+                    
+                    // Flash effect
+                    document.body.style.backgroundColor = "#00ff9a";
+                    setTimeout(() => {
+                        document.body.style.backgroundColor = "#000000";
+                    }, 100);
+                    
+                    // Make data sea visible
+                    if (window.dataSea) {
+                        window.dataSea.group.visible = true;
+                    }
+                    
+                    // Show post-portal title - only after entering the portal
+                    setTimeout(() => {
+                        document.getElementById('post-portal-title').style.opacity = 1;
+                        
+                        // Use typing animation for the subtitle - only start typing after showing the title
+                        setTimeout(() => {
+                            typeText(document.getElementById('post-portal-subtitle'), 'the portal to your company knowledge', 40, 0, () => {
+                                // After subtitle completes, show the button
+                                setTimeout(() => {
+                                    // Show the portal button with typing effect
+                                    const portalButton = document.getElementById('portal-button');
+                                    portalButton.style.opacity = 1;
+                                    
+                                    // Animation is complete
+                                    animationCompleted = true;
+                                }, 300);
+                            });
+                        }, 600); // Reduced from 1000
+                    }, 400); // Reduced from 800
+                }
+                
+                if (portalTransition.progress >= 1.0) {
+                    // Transition complete
+                    portalTransition.active = false;
+                    camera.position.z = portalTransition.targetZ;
+                }
+            }
+            
+            // Animate background
+            if (window.backgroundPixels) {
+                const positions = window.backgroundPixels.points.geometry.attributes.position.array;
+                
+                for (let i = 0; i < window.backgroundPixels.elements.length; i++) {
+                    const pixel = window.backgroundPixels.elements[i];
+                    positions[i * 3 + 1] = Math.sin(time * pixel.pulseSpeed + pixel.x * 0.01 + pixel.z * 0.01) * 2;
+                }
+                
+                window.backgroundPixels.points.geometry.attributes.position.needsUpdate = true;
+                
+                // Animate floating bytes
+                window.backgroundPixels.bytes.forEach(byte => {
+                    byte.mesh.position.x += byte.speed.x * deltaTime * 60;
+                    byte.mesh.position.y += byte.speed.y * deltaTime * 60;
+                    byte.mesh.position.z += byte.speed.z * deltaTime * 60;
+                    
+                    byte.mesh.rotation.x += byte.rotate.x * deltaTime * 60;
+                    byte.mesh.rotation.y += byte.rotate.y * deltaTime * 60;
+                    byte.mesh.rotation.z += byte.rotate.z * deltaTime * 60;
+                    
+                    // Keep bytes in view
+                    if (byte.mesh.position.z > 100) byte.mesh.position.z = -250;
+                    if (byte.mesh.position.z < -250) byte.mesh.position.z = 100;
+                    
+                    if (Math.abs(byte.mesh.position.x) > 150) byte.speed.x *= -1;
+                    if (Math.abs(byte.mesh.position.y) > 100) byte.speed.y *= -1;
+                });
+            }
+            
+            // Animate portal
+            if (window.portal) {
+                // Animate portal grid points with blink and pulse effects
+                if (window.portal.geometry && window.portal.geometry.attributes.position) {
+                    const portalPositions = window.portal.geometry.attributes.position.array;
+                    const portalColors = window.portal.geometry.attributes.color.array;
+                    
+                    window.portal.pixels.forEach(pixel => {
+                        if (pixel.index >= 0 && pixel.index * 3 + 2 < portalPositions.length) {
+                            // Pulse/hover effect - more pronounced
+                            const pulseZ = pixel.originalZ + 
+                                Math.sin(time * pixel.pulseSpeed + pixel.row * 0.2 + pixel.col * 0.3) * pixel.pulseAmount;
+                            
+                            portalPositions[pixel.index * 3 + 2] = pulseZ;
+                            
+                            // Blinking effect - more pixelated/digital looking
+                            const blinkFactor = 0.5 + Math.sin(time * pixel.blinkSpeed + pixel.blinkPhase) * 0.5;
+                            // Apply more aggressive blinking to create a digital artifact effect
+                            const opacity = Math.round(blinkFactor * 4) / 4; // Quantize for digital effect
+                            
+                            // Update color brightness to create blinking
+                            const colorIdx = pixel.index * 3;
+                            // More green for edges
+                            if (pixel.isEdge) {
+                                portalColors[colorIdx + 1] = 0.7 + opacity * 0.3; // Green
+                                portalColors[colorIdx + 2] = 0.3 + opacity * 0.3; // Blue
+                            } else {
+                                portalColors[colorIdx + 1] = 0.5 + opacity * 0.5; // Green
+                                portalColors[colorIdx + 2] = 0.2 + opacity * 0.3; // Blue
+                            }
+                        }
+                    });
+                    
+                    window.portal.geometry.attributes.position.needsUpdate = true;
+                    window.portal.geometry.attributes.color.needsUpdate = true;
+                }
+                
+                // Animate grid lines with blinking
+                if (window.portal.gridLines) {
+                    window.portal.gridLines.forEach(line => {
+                        // Create digital blinking effect
+                        const blink = Math.sin(time * line.blinkSpeed + line.blinkPhase);
+                        // Quantize for more digital effect
+                        const opacity = Math.round((0.3 + blink * 0.4) * 3) / 3;
+                        line.line.material.opacity = opacity;
+                        
+                        // Add color variation
+                        const colorFactor = 0.7 + Math.sin(time * line.pulseSpeed) * 0.3;
+                        line.line.material.color.setRGB(0, colorFactor, colorFactor * 0.5);
+                    });
+                }
+                
+                // Animate swirling particles
+                if (window.portal.particles) {
+                    const positions = window.portal.particles.geometry.attributes.position.array;
+                    
+                    window.portal.particles.elements.forEach(particle => {
+                        // Update angle for swirling motion
+                        particle.angle += particle.speed * deltaTime;
+                        
+                        // Calculate new position
+                        const x = Math.cos(particle.angle) * particle.radius;
+                        const y = Math.sin(particle.angle) * particle.radius;
+                        
+                        // Check for valid index and prevent NaN values
+                        if (particle.index >= 0 && 
+                            particle.index + 2 < positions.length && 
+                            !isNaN(x) && !isNaN(y)) {
+                            // Update position
+                            positions[particle.index] = x;
+                            positions[particle.index + 1] = y;
+                        }
+                    });
+                    
+                    window.portal.particles.geometry.attributes.position.needsUpdate = true;
+                }
+                
+                // Fade out portal during transition
+                if (animationPhase === 3) {
+                    const transitionTime = time - portalTransitionTime;
+                    const fadeOutOpacity = Math.max(0, 1 - transitionTime * 3); // Faster fade (was 2)
+                    
+                    // Fade out portal elements
+                    if (window.portal.points && window.portal.points.material) {
+                        window.portal.points.material.opacity = fadeOutOpacity;
+                    }
+                    
+                    // Fade out grid lines
+                    if (window.portal.gridLines) {
+                        window.portal.gridLines.forEach(line => {
+                            if (line.line && line.line.material) {
+                                line.line.material.opacity = fadeOutOpacity * line.line.material.opacity;
+                            }
+                        });
+                    }
+                    
+                    if (window.portal.particles && window.portal.particles.points) {
+                        window.portal.particles.points.material.opacity = fadeOutOpacity * 0.7;
+                    }
+                    
+                    // If completely faded out, temporarily hide the group to improve performance
+                    if (fadeOutOpacity <= 0.01 && window.portal.group) {
+                        window.portal.group.visible = false;
+                    }
+                }
+            }
+            
+            // Camera movement with improved transition handling
+            if (animationPhase === 2 && !portalTransition.active) {
+                // Regular approach to portal - speed up (was 20, now 30)
+                const distanceToPortal = Math.abs(portalTransition.startZ - camera.position.z);
+                const speedFactor = Math.max(0.3, Math.min(1.0, distanceToPortal / 30));
+                camera.position.z -= 30 * speedFactor * deltaTime;
+            } else if (portalTransition.active) {
+                // Special smooth transition through portal with pull effect
+                // Use custom easing for smooth transition with acceleration
+                const t = portalTransition.progress;
+                
+                // Enhanced easing function - accelerates toward portal then smooths out
+                let smoothT;
+                if (t < 0.5) {
+                    // First half - accelerate toward portal with pull effect
+                    smoothT = t * t * (3 - 2 * t); // Smoother easing in
+                    
+                    // Calculate pull effect that intensifies as we approach the portal
+                    const pullIntensity = Math.pow(t * 2, 2); // Squared for non-linear intensity
+                    portalTransition.pullEffect = pullIntensity;
+                    
+                    // Add slight acceleration as we approach the center of the portal
+                    const portalProximity = Math.abs(camera.position.z - portalTransition.portalZ);
+                    if (portalProximity < 10) {
+                        smoothT += (1 - portalProximity / 10) * 0.1; // Boost near portal
+                    }
+                } else {
+                    // Second half - smooth deceleration after passing portal
+                    const t2 = t - 0.5;
+                    smoothT = 0.5 + t2 - t2 * t2 * 0.5; // Gentler curve after portal
+                    portalTransition.pullEffect = Math.max(0, 1 - (t - 0.5) * 3); // Fade out pull effect
+                }
+                
+                // Interpolate camera position with improved smoothing
+                camera.position.z = portalTransition.startZ + (portalTransition.targetZ - portalTransition.startZ) * smoothT;
+                
+                // Enhanced portal effect - camera gets pulled toward center then stabilizes
+                const portalEffect = portalTransition.pullEffect;
+                
+                // Add visual distortion through camera movement
+                // Slight wobble that intensifies then fades
+                const wobbleAmplitude = portalEffect * 0.8;
+                const wobbleSpeed = 15 + portalEffect * 10; 
+                const wobble = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
+                
+                camera.position.x = wobble;
+                camera.position.y = wobble * 0.7;
+                
+                // Add slight FOV change for added effect
+                if (t < 0.6) {
+                    // Widen FOV slightly as we approach/enter portal
+                    camera.fov = 75 + portalEffect * 15;
+                    camera.updateProjectionMatrix();
+                } else {
+                    // Return to normal
+                    camera.fov = 75;
+                    camera.updateProjectionMatrix();
+                }
+            } else if (animationPhase === 3 && !portalTransition.active) {
+                // Move through the data sea with gradually increasing speed to final position
+                const timeInDataSea = time - portalTransitionTime;
+                
+                // Only move camera for a short while then stop at a good viewing distance
+                if (camera.position.z > -250) { // Stop at this position
+                    // Faster movement (was 60, now 80)
+                    camera.position.z -= 80 * deltaTime;
+                }
+            }
+            
+            // Animate data sea
+            if (window.dataSea && window.dataSea.group.visible) {
+                const transitionTime = time - portalTransitionTime;
+                
+                // Fade in data sea elements gradually but faster (was 0.3, now 0.5)
+                const seaOpacity = Math.min(0.9, transitionTime * 0.5);
+                
+                // Animate nodes with wave effect
+                window.dataSea.nodes.forEach(node => {
+                    // Wave effect
+                    const waveY = node.baseY + 
+                        Math.sin(time * node.waveSpeed + node.offset + node.x * 0.01) * node.waveHeight + 
+                        Math.cos(time * 0.5 * node.waveSpeed + node.z * 0.01) * node.waveHeight * 0.5;
+                    
+                    node.mesh.position.y = waveY;
+                    
+                    // Fade in
+                    node.mesh.material.opacity = seaOpacity * (0.4 + Math.random() * 0.6);
+                    
+                    // Subtle rotation
+                    node.mesh.rotation.x += 0.2 * node.waveSpeed * deltaTime;
+                    node.mesh.rotation.y += 0.2 * node.waveSpeed * deltaTime;
+                });
+                
+                // Update connection lines
+                window.dataSea.connections.forEach(connection => {
+                    const linePositions = connection.line.geometry.attributes.position.array;
+                    
+                    // Update endpoints to follow nodes
+                    linePositions[0] = connection.node1.mesh.position.x;
+                    linePositions[1] = connection.node1.mesh.position.y;
+                    linePositions[2] = connection.node1.mesh.position.z;
+                    
+                    linePositions[3] = connection.node2.mesh.position.x;
+                    linePositions[4] = connection.node2.mesh.position.y;
+                    linePositions[5] = connection.node2.mesh.position.z;
+                    
+                    connection.line.geometry.attributes.position.needsUpdate = true;
+                    
+                    // Fade in with distance-based opacity for depth effect
+                    const distance = Math.sqrt(
+                        Math.pow(linePositions[0] - linePositions[3], 2) + 
+                        Math.pow(linePositions[1] - linePositions[4], 2) + 
+                        Math.pow(linePositions[2] - linePositions[5], 2)
+                    );
+                    
+                    const opacityFactor = Math.max(0.1, Math.min(1.0, 1000 / Math.pow(distance, 2)));
+                    connection.line.material.opacity = Math.min(0.3, seaOpacity * opacityFactor);
+                });
+            }
+            
+            // Render the scene
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+    </script>
+</body>
+</html>
