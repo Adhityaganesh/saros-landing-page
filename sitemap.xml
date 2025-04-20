@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://saros.wtf/</loc>
+    <loc>https://app.saros-ai.com/</loc>
     <lastmod>2025-04-20</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://saros.wtf/#features</loc>
+    <loc>https://app.saros-ai.com/#features</loc>
     <lastmod>2025-04-20</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://saros.wtf/#integrations</loc>
+    <loc>https://app.saros-ai.com/#integrations</loc>
     <lastmod>2025-04-20</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://saros.wtf/#setup</loc>
+    <loc>https://app.saros-ai.com/#setup</loc>
     <lastmod>2025-04-20</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://saros.wtf/#contact</loc>
+    <loc>https://app.saros-ai.com/#contact</loc>
     <lastmod>2025-04-20</lastmod>
     <priority>0.7</priority>
   </url>
