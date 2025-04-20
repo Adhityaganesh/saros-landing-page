@@ -1,6 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<script>
+  window.fcSettings = {
+    token: "32347393/1275727",
+    host: "https://wchat.freshchat.com",
+    config: {
+      cssNames: {
+        widget: 'custom_freshchat_style'
+      }
+    },
+    onInit: function() {
+      // The widget has been initialized
+      try {
+        // Get user email if available
+        const userEmail = localStorage.getItem('user_email') || '';
+        if (userEmail) {
+          // Set user information if email exists
+          window.fcWidget.setExternalId(userEmail);
+          window.fcWidget.user.setEmail(userEmail);
+          
+          // Set user name - if you have it stored elsewhere, use that instead
+          const userName = localStorage.getItem('user_name') || userEmail.split('@')[0];
+          window.fcWidget.user.setFirstName(userName);
+          
+          // Set user properties - modify as needed for your business
+          window.fcWidget.user.setProperties({
+            cf_plan: "Website Visitor",
+            cf_status: "Active"
+          });
+        }
+      } catch (error) {
+        console.log('Error setting user data in Freshchat', error);
+      }
+    }
+  };
+</script>
 <script src='//in.fw-cdn.com/32347393/1275727.js' chat='true'></script>
+<html lang="en">
   <head>
     <!-- ─── META & SEO ──────────────────────────────────────────────── -->
     <meta charset="UTF-8" />
@@ -1030,6 +1065,73 @@
         from { opacity: 0; transform: translateY(8px) scale(.95); }
         to { opacity: 1; transform: translateY(0) scale(1); }
       }
+      
+      /* Custom Freshchat Widget Styling */
+      .custom_freshchat_style {
+        --fc-widget-primary-color: #00ff9a !important; 
+        --fc-widget-primary-color-rgb: 0, 255, 154 !important;
+        --fc-widget-primary-color-darker: #00cc7a !important;
+        --fc-widget-bg-color: #000000 !important;
+        --fc-widget-bg-color-lighter: rgba(0, 255, 154, 0.1) !important;
+        --fc-chat-message-bg-color: rgba(0, 0, 0, 0.6) !important;
+        --fc-chat-message-text-color: #e7ffe6 !important;
+        --fc-chat-message-text-color-lighter: rgba(231, 255, 230, 0.7) !important;
+        --fc-chat-message-border-color: rgba(0, 255, 154, 0.2) !important;
+      }
+      
+      /* Button styling */
+      .fc-widget-small .fc-button {
+        background: linear-gradient(to right, #00cc7a, #00ff9a, #7affcb) !important;
+        box-shadow: 0 0 6px #00ff9a !important;
+        animation: pulse-glow 2s infinite !important;
+      }
+      
+      @keyframes pulse-glow {
+        0% { box-shadow: 0 0 0 0 rgba(0, 255, 154, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(0, 255, 154, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 255, 154, 0); }
+      }
+      
+      /* Chat window styling */
+      .fc-widget .fc-chat-window, .fc-widget .fc-chat-window {
+        background-image: radial-gradient(circle, rgba(0, 255, 154, 0.1) 1px, transparent 1px) !important;
+        background-size: 3px 3px !important;
+      }
+      
+      /* Header styling */
+      .fc-widget .fc-chat-window .fc-header {
+        background: linear-gradient(to right, #00cc7a, #00ff9a) !important;
+        color: #000000 !important;
+        font-family: 'IBM Plex Mono', monospace !important;
+        font-weight: 600 !important;
+      }
+      
+      /* Message styling */
+      .fc-widget .fc-message-text {
+        font-family: 'Space Grotesk', sans-serif !important;
+      }
+      
+      .fc-widget .fc-message-user .fc-message-text {
+        background-color: rgba(0, 255, 154, 0.1) !important;
+        border: 1px solid rgba(0, 255, 154, 0.2) !important;
+      }
+      
+      /* Input area */
+      .fc-widget .fc-footer {
+        background-color: rgba(0, 0, 0, 0.8) !important;
+        border-top: 1px solid rgba(0, 255, 154, 0.1) !important;
+      }
+      
+      .fc-widget .fc-footer .fc-message-input {
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(0, 255, 154, 0.2) !important;
+        color: #e7ffe6 !important;
+      }
+      
+      .fc-widget .fc-footer .fc-send-button {
+        background-color: #00ff9a !important;
+        color: #000000 !important;
+      }
     </style>
     
     <!-- Structured data for SEO -->
@@ -1055,6 +1157,7 @@
     </script>
   </head>
   <body>
+    <!-- REMOVED custom feedback button completely -->
     <!-- ╭─ NAVBAR (Floating) ───────────────────────────────── -->
     <header>
       <div class="nav-container">
@@ -1558,6 +1661,7 @@
       });
     </script>
     
-    <!-- Removed redundant script as it's now placed before the head tag -->
+    <!-- Feedback Widget Script -->
+    <script src='//in.fw-cdn.com/32347393/1275727.js' chat='true'></script>
   </body>
 </html>
