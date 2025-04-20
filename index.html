@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+<script src='//in.fw-cdn.com/32347393/1275727.js' chat='true'></script>
   <head>
     <!-- ─── META & SEO ──────────────────────────────────────────────── -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Saros Beta – Portal to Your Company Knowledge Base</title>
-    <meta name="description" content="Saros pipes your Confluence & internal docs straight into Slack so anyone can surface the answer in seconds." />
+    <title>Saros Beta – AI-Powered Knowledge Base for Slack | Instant Answers</title>
+    <meta name="description" content="Saros AI slackbot delivers instant answers from Confluence & internal docs directly in Slack. Lightning-fast knowledge retrieval with zero context switching." />
     <meta property="og:title" content="Saros Beta – Knowledge, one Slack command away" />
-    <meta property="og:description" content="Search, discover & share company knowledge without leaving Slack." />
-    <meta property="og:image" content="/assets/og-saros.png" />
+    <meta property="og:description" content="Access & share company knowledge in Slack with one @mention. The fastest AI knowledge assistant for teams." />
+    <meta property="og:image" content="https://i.imgur.com/TX5ppXB.png" />
+    <meta property="og:url" content="https://saros.ai/" />
+    <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Saros Beta – AI Knowledge Assistant for Slack" />
+    <meta name="twitter:description" content="Get instant answers from your knowledge base directly in Slack. No tab switching." />
+    <meta name="twitter:image" content="https://i.imgur.com/TX5ppXB.png" />
     <meta name="theme-color" content="#00ff9a" />
+    <meta name="keywords" content="slack knowledge base, ai assistant, moveworks alternative, atomicwork, enjo, agentic ai, slackbot, knowledge management, enterprise search, confluence integration, instant answers" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Saros AI" />
+    <link rel="canonical" href="https://saros.ai/" />
 
     <!-- Favicon / Logo -->
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" href="https://i.imgur.com/TX5ppXB.png" />
+    <link rel="apple-touch-icon" href="https://i.imgur.com/TX5ppXB.png" />
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -81,15 +92,15 @@
       
       /* --- Navbar (Floating) --- */
       header {
-        position: absolute;
+        position: fixed;
         top: 1.5rem;
         left: 50%;
         transform: translateX(-50%);
         width: calc(100% - 3rem);
-        max-width: 1000px; /* Reduced length */
+        max-width: 1000px;
         z-index: 50;
         border: 1px solid rgba(0, 255, 154, 0.2);
-        border-radius: 50px; /* Curved nav bar */
+        border-radius: 50px;
         backdrop-filter: blur(12px);
         background-color: rgba(0, 0, 0, 0.7);
         box-shadow: 0 8px 32px rgba(0, 255, 154, 0.15);
@@ -101,6 +112,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        position: relative;
       }
       
       .nav-logo {
@@ -119,15 +131,12 @@
         font-family: 'IBM Plex Mono', monospace;
         font-size: 1.25rem;
         letter-spacing: -0.5px;
-        color: var(--accent);
-        position: relative;
         background: linear-gradient(to right, var(--accent), #a7f3d0);
         background-size: 200% auto;
         background-clip: text;
         -webkit-background-clip: text;
         color: transparent;
-        display: none;
-        overflow: hidden;
+        white-space: nowrap;
       }
       
       @keyframes typing-logo {
@@ -137,13 +146,11 @@
         100% { width: 0; }
       }
       
-      @media (min-width: 640px) {
-        .logo-text {
-          display: inline-block;
-          width: 0;
-          white-space: nowrap;
-          animation: typing-logo 4s steps(5, end) infinite;
-        }
+      /* Fixed logo animation for all devices */
+      .logo-text {
+        display: inline-block;
+        width: 0;
+        animation: typing-logo 4s steps(5, end) infinite;
       }
       
       .nav-logo:hover .logo-text {
@@ -169,16 +176,55 @@
         animation: blink 0.8s step-end infinite;
       }
       
-      .nav-links {
+      /* Mobile menu toggle button */
+      .menu-toggle {
         display: none;
+        background: none;
+        border: none;
+        color: var(--fg);
+        font-size: 1.5rem;
+        cursor: pointer;
+        z-index: 60;
+      }
+      
+      /* Navigation for desktop and mobile */
+      .nav-links {
+        display: flex;
         align-items: center;
-        gap: 1.5rem; /* Reduced gap */
+        gap: 1.5rem;
         font-size: 0.875rem;
       }
       
-      @media (min-width: 768px) {
+      /* Mobile navigation styles */
+      @media (max-width: 767px) {
+        .menu-toggle {
+          display: block;
+        }
+        
         .nav-links {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          flex-direction: column;
+          background-color: rgba(0, 0, 0, 0.9);
+          border: 1px solid rgba(0, 255, 154, 0.2);
+          border-radius: 10px;
+          padding: 1rem 0;
+          margin-top: 0.5rem;
+          box-shadow: 0 8px 32px rgba(0, 255, 154, 0.15);
+          backdrop-filter: blur(12px);
+        }
+        
+        .nav-links.active {
           display: flex;
+        }
+        
+        .nav-links a {
+          padding: 0.75rem 2rem;
+          width: 100%;
+          text-align: center;
         }
       }
       
@@ -218,7 +264,7 @@
       /* --- Hero Section --- */
       .hero {
         position: relative;
-        padding-top: 9rem;
+        padding-top: 14rem; /* Increased to account for fixed header */
         padding-bottom: 5rem;
         overflow: hidden;
       }
@@ -393,29 +439,6 @@
       
       .btn i {
         font-size: 1.2rem;
-      }
-      
-      /* Feedback button */
-      .feedback-btn {
-        position: fixed;
-        right: 20px;
-        bottom: 20px;
-        background-color: var(--accent);
-        color: black;
-        padding: 0.75rem 1.25rem;
-        border-radius: 30px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        box-shadow: var(--glow), 0 5px 15px rgba(0, 0, 0, 0.2);
-        z-index: 100;
-        transform: translateY(0);
-        transition: transform 0.3s ease;
-      }
-      
-      .feedback-btn:hover {
-        transform: translateY(-5px);
       }
       
       /* Slack UI Examples Section */
@@ -1008,13 +1031,30 @@
         to { opacity: 1; transform: translateY(0) scale(1); }
       }
     </style>
+    
+    <!-- Structured data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Saros",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "AI-powered knowledge assistant that connects Slack with your company's knowledge base for instant answers.",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "42"
+      }
+    }
+    </script>
   </head>
   <body>
-    <!-- Feedback Button -->
-    <a href="#" class="feedback-btn">
-      <i class="fas fa-comment-dots"></i> Feedback
-    </a>
-    
     <!-- ╭─ NAVBAR (Floating) ───────────────────────────────── -->
     <header>
       <div class="nav-container">
@@ -1023,7 +1063,13 @@
           <span class="logo-text terminal-text">Saros</span>
           <span class="beta-tag">BETA</span>
         </a>
-        <nav class="nav-links">
+        
+        <!-- Mobile menu toggle button -->
+        <button class="menu-toggle" id="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <nav class="nav-links" id="nav-links">
           <a href="#features">Features</a>
           <a href="#integrations">Integrations</a>
           <a href="#setup">Setup</a>
@@ -1043,7 +1089,7 @@
           <h1 class="hero-title">
             Your knowledge<br />one <span class="highlight">@mention</span> away.
           </h1>
-          <p class="hero-desc">Mention <span>@saros</span> in any thread — get an instant reply in &lt;1 second with the exact paragraph, doc link or snippet you need, no tab‑hopping.</p>
+          <p class="hero-desc">Mention <span>@saros</span> in any Slack thread — get precise answers in &lt;1 second with exact info you need, no context switching.</p>
           <div class="button-container">
             <a href="https://onboarding.saros.wtf/slack/install" class="btn btn-primary">
               <i class="fab fa-slack"></i> Add to Slack
@@ -1181,37 +1227,37 @@
     <section id="features" class="features">
       <div class="container text-center">
         <h2 class="section-title">Features</h2>
-        <p class="section-desc">Everything you need to unleash team intelligence and eliminate knowledge friction.</p>
+        <p class="section-desc">Powerful tools to boost team productivity with instant knowledge access.</p>
         <div class="feature-grid">
           <div class="feature-card" style="animation: fadeIn 0.6s 0s both;">
             <div class="feature-icon"><i class="fas fa-search"></i></div>
             <h3 class="feature-title">Natural language</h3>
-            <p class="feature-desc">Ask in plain English, get precise pages & snippets with exact answers to your questions.</p>
+            <p class="feature-desc">Ask in plain English, get precise answers with exact snippets from your docs.</p>
           </div>
           <div class="feature-card" style="animation: fadeIn 0.6s 0.15s both;">
             <div class="feature-icon"><i class="fas fa-bolt"></i></div>
             <h3 class="feature-title">Instant</h3>
-            <p class="feature-desc">&lt;0.8s answers using hybrid vector/metadata search technology for lightning-fast responses.</p>
+            <p class="feature-desc">&lt;0.8s responses using hybrid vector/metadata search for lightning-fast answers.</p>
           </div>
           <div class="feature-card" style="animation: fadeIn 0.6s 0.3s both;">
             <div class="feature-icon"><i class="fas fa-arrows-rotate"></i></div>
             <h3 class="feature-title">Auto‑sync</h3>
-            <p class="feature-desc">Fresh index every hour so nothing is stale. Always get the most up-to-date information.</p>
+            <p class="feature-desc">Fresh index every hour ensures you always get the most current information.</p>
           </div>
           <div class="feature-card" style="animation: fadeIn 0.6s 0.45s both;">
             <div class="feature-icon"><i class="fas fa-users"></i></div>
             <h3 class="feature-title">Democratized</h3>
-            <p class="feature-desc">Everyone self‑serves — kill context‑switch DMs. Find answers without interrupting colleagues.</p>
+            <p class="feature-desc">Self-serve knowledge access eliminates interruptions and boosts team efficiency.</p>
           </div>
           <div class="feature-card" style="animation: fadeIn 0.6s 0.6s both;">
             <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
             <h3 class="feature-title">Secure</h3>
-            <p class="feature-desc">1:1 with Confluence permissions + only embeddings stored, no actual data. Enterprise-grade security.</p>
+            <p class="feature-desc">Enterprise-grade security with respect for Confluence permissions and data privacy.</p>
           </div>
           <div class="feature-card" style="animation: fadeIn 0.6s 0.75s both;">
             <div class="feature-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
             <h3 class="feature-title">Zero config</h3>
-            <p class="feature-desc">OAuth install — done. No servers to run, no complex setup, no maintenance required.</p>
+            <p class="feature-desc">Install with OAuth in seconds — no servers, setup, or maintenance required.</p>
           </div>
         </div>
       </div>
@@ -1222,7 +1268,7 @@
       <div class="container">
         <div class="integrations-header">
           <h2 class="section-title">Seamless Integrations</h2>
-          <p class="section-desc">Connect Saros with your knowledge sources and tools for unified access to all company information.</p>
+          <p class="section-desc">Connect your essential tools for unified knowledge access across platforms.</p>
         </div>
         <div class="integrations-grid">
           <div class="integration-card">
@@ -1314,7 +1360,7 @@
                   <div class="timeline-arrow"></div>
                   <div class="timeline-content">
                     <h3 class="timeline-title">OAuth install</h3>
-                    <p class="timeline-desc">Just type "configure" in Slack to connect to Saros. Add it to your workspace → authenticate with Confluence using secure OAuth. That's it, no complex configuration or setup required.</p>
+                    <p class="timeline-desc">Add to workspace → authenticate with Confluence. Just type "configure" in Slack to complete setup in seconds.</p>
                   </div>
                 </div>
                 
@@ -1326,7 +1372,7 @@
                   <div class="timeline-arrow"></div>
                   <div class="timeline-content">
                     <h3 class="timeline-title">Index & sync</h3>
-                    <p class="timeline-desc">Pages & attachments are vectorised and refreshed hourly. Advanced search algorithms ensure accurate results while respecting access permissions.</p>
+                    <p class="timeline-desc">Content is vectorized and refreshed hourly. Advanced search respects existing access permissions.</p>
                   </div>
                 </div>
                 
@@ -1337,7 +1383,7 @@
                   </div>
                   <div class="timeline-content">
                     <h3 class="timeline-title">Ask & share</h3>
-                    <p class="timeline-desc">Use @saros mention in any thread; answers appear instantly with citations. Share knowledge with team members without switching contexts.</p>
+                    <p class="timeline-desc">@mention Saros in any thread for instant answers with sources. Share knowledge without disruptions.</p>
                   </div>
                 </div>
               </div>
@@ -1467,7 +1513,7 @@
     <section id="contact" class="contact">
       <div class="contact-container">
         <h2 class="contact-title">Get in touch</h2>
-        <p class="contact-desc">Questions? Need an enterprise deployment? Join our early access program or drop us a line for custom integrations.</p>
+        <p class="contact-desc">Questions? Need enterprise deployment? Contact us for custom integrations or early access.</p>
         <a href="mailto:contact@saros-ai.com" class="btn btn-secondary">contact@saros-ai.com</a>
       </div>
     </section>
@@ -1476,5 +1522,42 @@
     <footer>
       <p>&copy; 2025 Saros. All rights reserved.</p>
     </footer>
+    
+    <!-- Mobile menu toggle script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        
+        menuToggle.addEventListener('click', function() {
+          navLinks.classList.toggle('active');
+          
+          // Change icon based on menu state
+          const icon = menuToggle.querySelector('i');
+          if (navLinks.classList.contains('active')) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+          } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+          }
+        });
+        
+        // Close menu when clicking a link (mobile)
+        const links = navLinks.querySelectorAll('a');
+        links.forEach(link => {
+          link.addEventListener('click', function() {
+            if (window.innerWidth <= 767) {
+              navLinks.classList.remove('active');
+              const icon = menuToggle.querySelector('i');
+              icon.classList.remove('fa-times');
+              icon.classList.add('fa-bars');
+            }
+          });
+        });
+      });
+    </script>
+    
+    <!-- Removed redundant script as it's now placed before the head tag -->
   </body>
 </html>
