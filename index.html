@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      // Only redirect “naked” / → /landing when the user did NOT come from /landing
+      if (
+        window.location.pathname === '/' &&
+        !document.referrer.includes('/landing')
+      ) {
+        window.location.replace('/landing');
+      }
+    </script>
     <!-- ─── META & SEO ──────────────────────────────────────────────── -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
