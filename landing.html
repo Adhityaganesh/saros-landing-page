@@ -1,309 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Saros – AI Knowledge Portal in Slack</title>
-
-  <!-- Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&family=Open+Sans:wght@400;600&family=VT323&family=Space+Grotesk:wght@700&display=swap"
-    rel="stylesheet"/>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saros - The Portal to Your Company Knowledge</title>
+  <!-- Load IBM Plex Mono (Light) alongside existing fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&family=VT323&family=Press+Start+2P&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet"/>
   <style>
-    /* reset & vars */
-    * { margin: 0; padding: 0; box-sizing: border-box }
-    :root {
-      --bg: #050607;
-      --fg: #00ff9a;
-      --white: #fff;
-      --glow: rgba(0,255,154,0.55);
-      --body-size: 0.85rem;
+    /* Base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+
+    :root {
+      --bg-color: #050607;
+      --text-color: #00ff9a;
+      --shadow-color: #00ff9a33;
+      --glow-color: #00ff9a55;
+      --white-text: #ffffff;
+    }
+
     body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: 'Open Sans', sans-serif;
-      font-size: var(--body-size);
+      font-family: "SF Pro Display", sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       overflow: hidden;
+      height: 100vh;
+      width: 100vw;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      width: 100vw;
     }
+
     canvas {
       position: absolute;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       z-index: 1;
     }
+
     .content {
       position: relative;
       z-index: 2;
       text-align: center;
       opacity: 0;
-      transition: opacity 1.5s ease-in-out;
+      transition: opacity 2s ease-in-out;
       width: 80vw;
-      max-width: 700px;
-      margin: auto;
+      max-width: 600px;
     }
+
     h1 {
+      /* Saros title in IBM Plex Mono Light */
       font-family: 'IBM Plex Mono', monospace;
       font-weight: 300;
-      font-size: 2.5rem;
-      text-shadow: 0 0 8px var(--glow), 0 0 16px var(--glow);
+      letter-spacing: 0.04em;
+      line-height: 150%;
       margin-bottom: 1rem;
+      font-size: 2.5rem;
+      color: var(--text-color);
+      text-shadow: 0 0 8px var(--glow-color), 0 0 16px var(--glow-color);
       animation: pulse 4s infinite;
     }
+
     @keyframes pulse {
-      0%,100% { text-shadow:0 0 8px var(--glow),0 0 16px var(--glow); }
-      50%      { text-shadow:0 0 24px var(--glow),0 0 32px var(--glow); }
+      0%   { text-shadow: 0 0 8px var(--glow-color), 0 0 16px var(--glow-color); }
+      50%  { text-shadow: 0 0 16px var(--glow-color), 0 0 24px var(--glow-color); }
+      100% { text-shadow: 0 0 8px var(--glow-color), 0 0 16px var(--glow-color); }
     }
+
     h2 {
       font-family: 'VT323', monospace;
-      font-size: 2rem;
-      color: var(--white);
-      text-shadow: 0 0 5px var(--glow);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      line-height: 120%;
       margin-bottom: 2rem;
+      font-size: 2rem;
+      color: var(--white-text);
+      text-shadow: 0 0 5px var(--glow-color);
     }
+
+    /* Button styled for IBM Plex Mono + diamond icon */
     button {
       font-family: 'IBM Plex Mono', monospace;
       font-weight: 300;
-      font-size: 1rem;
+      letter-spacing: 0.04em;
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: #000;
-      color: var(--fg);
-      border: 2px solid var(--fg);
+      background-color: #000;
+      color: var(--text-color);
+      border: 2px solid var(--text-color);
       border-radius: 26px;
       padding: 0 24px;
       height: 52px;
       cursor: pointer;
-      box-shadow: 0 0 12px var(--glow), 0 0 24px var(--glow);
+      transition: all 160ms ease-out;
+      box-shadow: 0 0 12px var(--glow-color), 0 0 24px var(--glow-color);
+      min-width: 180px;
+      font-size: 1rem;
       position: relative;
       overflow: hidden;
-      transition: all 0.16s ease-out;
-      margin-bottom: 3rem;
     }
-    button svg { width: 20px; height: 20px; fill: currentColor }
+
+    button svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
     button:before {
-      content: "";
-      position: absolute; inset: -10px;
-      background: linear-gradient(45deg, rgba(0,255,154,0.2), transparent);
-      filter: blur(5px); opacity: 0; transition: opacity 0.3s;
-    }
-    button:hover, button:focus {
-      background: var(--fg); color: #000;
-      box-shadow: 0 0 20px var(--glow), 0 0 40px var(--glow);
-    }
-    button:hover:before { opacity: 1 }
-
-    /* two‑column centered layout */
-    .seo {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 4rem;
-      margin: 0 auto;
-      max-width: 700px;
-      color: #ddd;
-      line-height: 1.5;
-    }
-    .seo > div {
-      flex: 1;
-      min-width: 200px;
-    }
-    .seo h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.1rem;
-      color: var(--fg);
-      margin-bottom: 0.5rem;
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      background: linear-gradient(45deg, rgba(0,255,154,0.2), rgba(0,255,154,0));
+      filter: blur(5px);
+      opacity: 0;
+      transition: opacity 300ms ease-out;
     }
 
-    /* numbered list for integrations */
-    .integrations-list {
-      list-style: decimal inside;
-      padding-left: 1em;
+    button:hover,
+    button:focus {
+      background-color: var(--text-color);
+      color: #000;
+      outline: none;
+      box-shadow: 0 0 15px var(--glow-color), 0 0 30px var(--glow-color);
     }
-    .integrations-list li {
-      margin-bottom: 0.3rem;
+
+    button:hover:before {
+      opacity: 1;
+    }
+
+    /* Glassmorphism for future login overlay */
+    .glass-card {
+      backdrop-filter: blur(30px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 8px var(--shadow-color);
+      padding: 2rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .content {
+        transition: opacity 2s ease-in-out;
+      }
+      button {
+        transition: none;
+      }
+      h1 {
+        animation: none;
+        text-shadow: 0 0 12px var(--glow-color);
+      }
     }
 
     @media (max-width: 768px) {
-      .content { max-width: 90vw; }
-      .seo { flex-direction: column; gap: 2rem; }
-      h1 { font-size: 2rem; }
-      h2 { font-size: 1.5rem; }
-      button { min-height: 48px; }
+      h1 {
+        font-size: 1.8rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      button {
+        min-height: 48px;
+      }
     }
   </style>
 </head>
 <body>
   <canvas id="grid-canvas"></canvas>
-
   <div class="content">
     <h1>Saros</h1>
-    <h2>The portal to your company knowledge.</h2>
+    <h2>The portal to your company knowledge</h2>
     <button id="enter-portal">
+      <!-- Diamond icon -->
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="12,2 22,12 12,22 2,12"/>
+        <polygon points="12,2 22,12 12,22 2,12" />
       </svg>
       Enter Portal
     </button>
-
-    <div class="seo">
-      <div>
-        <h3>About Saros</h3>
-        <p>
-          Saros is an AI‑powered knowledge portal that brings your Confluence
-          spaces and internal docs straight into Slack. Using retrieval‑augmented
-          generation (RAG) and embeddings, Saros delivers instant, context‑aware
-          answers where your team collaborates.
-        </p>
-      </div>
-      <div>
-        <h3>Integrations</h3>
-        <ol class="integrations-list">
-          <li>Confluence (live)</li>
-          <li>Google Drive (coming soon)</li>
-          <li>Microsoft SharePoint (coming soon)</li>
-          <li>Notion (coming soon)</li>
-        </ol>
-      </div>
-    </div>
   </div>
 
   <script>
-  (function(){
-    const canvas = document.getElementById('grid-canvas'),
-          ctx    = canvas.getContext('2d'),
-          content= document.querySelector('.content'),
-          enter  = document.getElementById('enter-portal');
+    (function() {
+      const canvas = document.getElementById('grid-canvas');
+      const ctx = canvas.getContext('2d');
+      const content = document.querySelector('.content');
+      const enterPortalBtn = document.getElementById('enter-portal');
 
-    const cfg = {
-      grid:5, glyph:6, density:180,
-      bg:'#050607', screen:'#00ff9a', blink:600,
-      reduce: matchMedia('(prefers-reduced-motion: reduce)').matches,
-      ripFreq:0.05, ripAmp:8, lines:12, speed:0.3, glow:0.6
-    };
-    const prompts = [
-      'analyze market trends','summarize project status',
-      'generate quarterly report','extract key insights',
-      'provide competitive analysis','forecast revenue growth',
-      'identify customer patterns','create strategic roadmap',
-      'optimize resource allocation','evaluate team performance'
-    ];
-    let rows=[], flows=[], start=0, last=0, flick=0;
+      const config = {
+        gridSpacing: 5,
+        glyphSize: 6,
+        waveAmplitude: 20,
+        waveFrequency: 0.03,
+        promptFlickerInterval: 1200,
+        plusColor: '#00ff9a',
+        backgroundColor: '#050607',
+        promptColor: '#ffffff',
+        reduceMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        globalWaveFrequency: 0.2,
+        globalWaveAmplitude: 2,
+        rippleFrequency: 0.05,
+        rippleAmplitude: 8,
+        rippleDensity: 180,
+        screenColor: '#00ff9a',
+        textLines: 12,
+        textSpeed: 0.3,
+        screenGlowIntensity: 0.6
+      };
 
-    function init(){
-      resize(); makeGrid(); makeFlows(); bind(); fadeIn();
-      if(!cfg.reduce) requestAnimationFrame(animate);
-    }
-    function resize(){
-      const d=window.devicePixelRatio||1;
-      canvas.width=innerWidth*d; canvas.height=innerHeight*d;
-      canvas.style.width=innerWidth+'px'; canvas.style.height=innerHeight+'px';
-      ctx.scale(d,d);
-    }
-    function makeGrid(){
-      rows=[]; const R=Math.ceil(innerHeight/cfg.grid),
-                     C=Math.ceil(innerWidth/cfg.grid);
-      for(let i=0;i<=R;i++){
-        const has=Math.random()<0.1;
-        rows.push({
-          y:i*cfg.grid, has,
-          text:has?prompts[Math.floor(Math.random()*prompts.length)]:'',
-          col:has?Math.floor(Math.random()*(C-10))+5:0, op:0
-        });
-      }
-    }
-    function makeFlows(){
-      flows=[]; const sn=[
-        "system online","data transfer complete","processing information",
-        "access granted","knowledge base connected","portal ready"
+      let startTime = null, lastTime = 0, promptFlickerTime = 0;
+      let rows = [], flowingTextLines = [];
+
+      const aiPrompts = [
+        'analyze market trends',
+        'summarize project status',
+        'generate quarterly report',
+        'extract key insights',
+        'provide competitive analysis',
+        'forecast revenue growth',
+        'identify customer patterns',
+        'create strategic roadmap',
+        'optimize resource allocation',
+        'evaluate team performance'
       ];
-      for(let i=0;i<cfg.lines;i++){
-        flows.push({
-          text:sn[Math.floor(Math.random()*sn.length)],
-          x:-200-Math.random()*400,
-          y:Math.random()*innerHeight,
-          sp:(0.3+Math.random()*0.7)*cfg.speed, op:0
+
+      function init() {
+        setupCanvas();
+        createEnhancedBackground();
+        setupFlowingTextLines();
+        setupEventListeners();
+        startAnimation();
+        setTimeout(() => content.style.opacity = '1', 2000);
+      }
+
+      function setupCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
+        ctx.scale(dpr, dpr);
+      }
+
+      function createEnhancedBackground() {
+        rows = [];
+        const numRows = Math.ceil(window.innerHeight / config.gridSpacing) + 1;
+        const numCols = Math.ceil(window.innerWidth / config.gridSpacing) + 1;
+        for (let i = 0; i < numRows; i++) {
+          const rowY = i * config.gridSpacing;
+          const hasPrompt = Math.random() < 0.1;
+          const promptText = hasPrompt
+            ? aiPrompts[Math.floor(Math.random() * aiPrompts.length)]
+            : '';
+          const promptCol = hasPrompt
+            ? Math.floor(Math.random() * (numCols - promptText.length - 5)) + 5
+            : -1;
+          rows.push({
+            y: rowY,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.3 + Math.random() * 0.3,
+            hasPrompt,
+            promptText,
+            promptCol,
+            promptOpacity: 0.4 + Math.random() * 0.4
+          });
+        }
+      }
+
+      function setupFlowingTextLines() {
+        flowingTextLines = [];
+        const snippets = [
+          "analyzing data...",
+          "knowledge base connected",
+          "processing information",
+          "searching archives",
+          "system online",
+          "data transfer complete",
+          "acquiring knowledge",
+          "neural link established",
+          "syncing databases",
+          "company insights ready",
+          "access granted",
+          "knowledge assets indexed",
+          "portal ready",
+          "ai assistant activated",
+          "initializing systems"
+        ];
+        for (let i = 0; i < config.textLines; i++) {
+          const y = Math.random() * window.innerHeight;
+          const text = snippets[Math.floor(Math.random() * snippets.length)];
+          const speed = (0.3 + Math.random() * 0.7) * config.textSpeed;
+          flowingTextLines.push({ text, x: -200 - Math.random() * 500, y, speed, opacity: 0.2 + Math.random() * 0.3 });
+        }
+      }
+
+      function handleResize() {
+        setupCanvas();
+        createEnhancedBackground();
+        setupFlowingTextLines();
+      }
+
+      function setupEventListeners() {
+        window.addEventListener('resize', handleResize);
+        enterPortalBtn.addEventListener('click', e => {
+          e.preventDefault();
+          window.location.href = 'https://app.saros-ai.com/';
         });
       }
-    }
-    function bind(){
-      window.addEventListener('resize',()=>{
-        resize(); makeGrid(); makeFlows();
-      });
-      enter.addEventListener('click',e=>{
-        e.preventDefault();
-        window.location.href='https://app.saros-ai.com/';
-      });
-    }
-    function fadeIn(){
-      setTimeout(()=>content.style.opacity='1',1500);
-    }
-    function animate(ts){
-      if(!start) start=ts;
-      const dt=ts-last||0; last=ts; flick+=dt;
-      if(flick>cfg.blink){
-        flick=0; rows.forEach(r=>r.has&&(r.op=Math.random()>0.5?1:0));
+
+      function startAnimation() {
+        startTime = performance.now();
+        lastTime = startTime;
+        if (config.reduceMotion) {
+          drawStaticScene();
+        } else {
+          requestAnimationFrame(animate);
+        }
       }
-      // background & tint
-      ctx.fillStyle=cfg.bg; ctx.fillRect(0,0,innerWidth,innerHeight);
-      ctx.fillStyle=cfg.screen; ctx.globalAlpha=0.05;
-      ctx.fillRect(0,0,innerWidth,innerHeight); ctx.globalAlpha=1;
-      drawGrid(ts); drawFlows(dt); drawGlow();
-      requestAnimationFrame(animate);
-    }
-    function drawGrid(ts){
-      const t=ts*0.0007, cx=innerWidth/2, cy=innerHeight/2;
-      ctx.font=`${cfg.glyph}px monospace`; ctx.fillStyle=cfg.screen;
-      const sp=Math.max(4,Math.min(innerWidth,innerHeight)/cfg.density);
-      for(let y=0;y<innerHeight;y+=sp){
-        for(let x=0;x<innerWidth;x+=sp){
-          const dx=x-cx, dy=y-cy, d=Math.hypot(dx,dy);
-          const r=Math.sin(d*cfg.ripFreq-t)*cfg.ripAmp;
-          const a=Math.atan2(dy,dx);
-          if(Math.random()>0.4){
-            ctx.fillText('.', x+r*Math.cos(a), y+r*Math.sin(a));
+
+      function drawStaticScene() {
+        ctx.fillStyle = config.backgroundColor;
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.fillStyle = config.screenColor;
+        ctx.globalAlpha = 0.05;
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.globalAlpha = 1;
+        drawRippleGrid(0);
+        addScreenGlow();
+      }
+
+      function animate(ts) {
+        const elapsed = ts - startTime;
+        const dt = ts - lastTime;
+        lastTime = ts;
+        promptFlickerTime += dt;
+        if (promptFlickerTime > config.promptFlickerInterval) {
+          promptFlickerTime = 0;
+          rows.forEach(r => { if (r.hasPrompt) r.promptOpacity = 0.4 + Math.random() * 0.4; });
+        }
+        ctx.fillStyle = config.backgroundColor;
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.fillStyle = config.screenColor;
+        ctx.globalAlpha = 0.05;
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.globalAlpha = 1;
+        ctx.save();
+        ctx.translate(0, Math.sin(elapsed * 0.0005 * config.globalWaveFrequency) * config.globalWaveAmplitude);
+        drawRippleGrid(ts);
+        drawFlowingText(elapsed, dt);
+        ctx.restore();
+        addScreenGlow();
+        requestAnimationFrame(animate);
+      }
+
+      function drawRippleGrid(ts) {
+        const time = ts * 0.0007;
+        ctx.font = `${config.glyphSize}px "SF Mono", Menlo, monospace`;
+        ctx.fillStyle = config.plusColor;
+        const spacing = Math.max(4, Math.min(window.innerWidth, window.innerHeight) / config.rippleDensity);
+        const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+        for (let y = 0; y < window.innerHeight; y += spacing) {
+          for (let x = 0; x < window.innerWidth; x += spacing) {
+            const dx = x - cx, dy = y - cy;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const ripple = Math.sin(dist * config.rippleFrequency - time) * config.rippleAmplitude;
+            const angle = Math.atan2(dy, dx);
+            const ix = x + ripple * Math.cos(angle);
+            const iy = y + ripple * Math.sin(angle);
+            if (Math.random() > 0.4) ctx.fillText('.', ix, iy);
           }
         }
+        // prompts
+        rows.forEach(r => {
+          if (r.hasPrompt) {
+            ctx.fillStyle = `rgba(255,255,255,${r.promptOpacity})`;
+            const px = r.promptCol * config.gridSpacing + Math.sin(time * r.speed * 0.3) * 10;
+            ctx.fillText(r.promptText, px, r.y);
+          }
+        });
       }
-      rows.forEach(r=>{
-        if(!r.has) return;
-        ctx.fillStyle=`rgba(255,255,255,${r.op})`;
-        ctx.fillText(r.text, r.col*cfg.grid, r.y);
-      });
-    }
-    function drawFlows(dt){
-      ctx.font=`${cfg.glyph}px monospace`;
-      flows.forEach(f=>{
-        f.x+=f.sp*dt*0.05;
-        if(f.x>innerWidth+100){
-          f.x=-200-Math.random()*300; f.y=Math.random()*innerHeight;
-          f.op=Math.random()>0.5?1:0;
-        }
-        const fade=1-Math.pow(Math.abs((f.x/innerWidth)-0.5)*2,1.5);
-        ctx.fillStyle=`rgba(0,255,154,${f.op*fade})`;
-        ctx.fillText(f.text, f.x, f.y);
-      });
-    }
-    function drawGlow(){
-      const cx=innerWidth/2, cy=innerHeight/2,
-            r=Math.max(innerWidth,innerHeight)*0.8;
-      const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
-      g.addColorStop(0,`rgba(0,255,154,${0.08*cfg.glow})`);
-      g.addColorStop(0.5,`rgba(0,255,154,${0.04*cfg.glow})`);
-      g.addColorStop(1,'rgba(0,255,154,0)');
-      ctx.fillStyle=g; ctx.globalCompositeOperation='lighter';
-      ctx.fillRect(0,0,innerWidth,innerHeight); ctx.globalCompositeOperation='source-over';
-    }
-    document.addEventListener('DOMContentLoaded', init);
-  })();
+
+      function drawFlowingText(el, dt) {
+        ctx.font = `${config.glyphSize}px "SF Mono", Menlo, monospace`;
+        flowingTextLines.forEach(line => {
+          line.x += line.speed * dt * 0.05;
+          if (line.x > window.innerWidth + 100) {
+            line.x = -200 - Math.random() * 300;
+            line.y = Math.random() * window.innerHeight;
+            line.opacity = 0.2 + Math.random() * 0.3;
+          }
+          const fade = 1 - Math.pow(Math.abs((line.x / window.innerWidth) - 0.5) * 2, 1.5);
+          ctx.fillStyle = `rgba(0,255,154,${line.opacity * fade})`;
+          ctx.fillText(line.text, line.x, line.y);
+        });
+      }
+
+      function addScreenGlow() {
+        const cx = window.innerWidth/2, cy = window.innerHeight/2;
+        const r  = Math.max(window.innerWidth, window.innerHeight)*0.8;
+        const g  = ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+        g.addColorStop(0,   `rgba(0,255,154,${0.08*config.screenGlowIntensity})`);
+        g.addColorStop(0.5, `rgba(0,255,154,${0.04*config.screenGlowIntensity})`);
+        g.addColorStop(1,   'rgba(0,255,154,0)');
+        ctx.fillStyle = g;
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
+      window.addEventListener('DOMContentLoaded', init);
+    })();
   </script>
 </body>
 </html>
