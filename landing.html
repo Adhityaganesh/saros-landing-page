@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Saros - The Portal to Your Company Knowledge</title>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <!-- Load IBM Plex Mono (Light) alongside existing fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&family=VT323&family=Press+Start+2P&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet"/>
   <style>
     /* Base styles */
     * {
@@ -12,7 +13,7 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     :root {
       --bg-color: #050607;
       --text-color: #00ff9a;
@@ -20,7 +21,7 @@
       --glow-color: #00ff9a55;
       --white-text: #ffffff;
     }
-    
+
     body {
       font-family: "SF Pro Display", sans-serif;
       background-color: var(--bg-color);
@@ -33,7 +34,7 @@
       align-items: center;
       justify-content: center;
     }
-    
+
     canvas {
       position: absolute;
       top: 0;
@@ -42,7 +43,7 @@
       height: 100vh;
       z-index: 1;
     }
-    
+
     .content {
       position: relative;
       z-index: 2;
@@ -52,10 +53,11 @@
       width: 80vw;
       max-width: 600px;
     }
-    
+
     h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
+      /* Saros title in IBM Plex Mono Light */
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 300;
       letter-spacing: 0.04em;
       line-height: 150%;
       margin-bottom: 1rem;
@@ -64,13 +66,13 @@
       text-shadow: 0 0 8px var(--glow-color), 0 0 16px var(--glow-color);
       animation: pulse 4s infinite;
     }
-    
+
     @keyframes pulse {
-      0% { text-shadow: 0 0 8px var(--glow-color), 0 0 16px var(--glow-color); }
-      50% { text-shadow: 0 0 16px var(--glow-color), 0 0 24px var(--glow-color); }
+      0%   { text-shadow: 0 0 8px var(--glow-color), 0 0 16px var(--glow-color); }
+      50%  { text-shadow: 0 0 16px var(--glow-color), 0 0 24px var(--glow-color); }
       100% { text-shadow: 0 0 8px var(--glow-color), 0 0 16px var(--glow-color); }
     }
-    
+
     h2 {
       font-family: 'VT323', monospace;
       font-weight: 400;
@@ -81,12 +83,16 @@
       color: var(--white-text);
       text-shadow: 0 0 5px var(--glow-color);
     }
-    
+
+    /* Button styled for IBM Plex Mono + diamond icon */
     button {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 300;
       letter-spacing: 0.04em;
-      background-color: #000000;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: #000;
       color: var(--text-color);
       border: 2px solid var(--text-color);
       border-radius: 26px;
@@ -100,7 +106,13 @@
       position: relative;
       overflow: hidden;
     }
-    
+
+    button svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
     button:before {
       content: '';
       position: absolute;
@@ -113,18 +125,19 @@
       opacity: 0;
       transition: opacity 300ms ease-out;
     }
-    
-    button:hover, button:focus {
+
+    button:hover,
+    button:focus {
       background-color: var(--text-color);
-      color: #000000;
+      color: #000;
       outline: none;
       box-shadow: 0 0 15px var(--glow-color), 0 0 30px var(--glow-color);
     }
-    
+
     button:hover:before {
       opacity: 1;
     }
-    
+
     /* Glassmorphism for future login overlay */
     .glass-card {
       backdrop-filter: blur(30px) saturate(180%);
@@ -134,33 +147,29 @@
       box-shadow: 0 0 8px var(--shadow-color);
       padding: 2rem;
     }
-    
+
     @media (prefers-reduced-motion: reduce) {
       .content {
         transition: opacity 2s ease-in-out;
       }
-      
       button {
         transition: none;
       }
-      
       h1 {
         animation: none;
         text-shadow: 0 0 12px var(--glow-color);
       }
     }
-    
+
     @media (max-width: 768px) {
       h1 {
         font-size: 1.8rem;
       }
-      
       h2 {
         font-size: 1.5rem;
       }
-      
       button {
-        min-height: 48px; /* Ensure min-tap area of 48px */
+        min-height: 48px;
       }
     }
   </style>
@@ -170,50 +179,46 @@
   <div class="content">
     <h1>Saros</h1>
     <h2>The portal to your company knowledge</h2>
-    <button id="enter-portal">Enter Portal</button>
+    <button id="enter-portal">
+      <!-- Diamond icon -->
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="12,2 22,12 12,22 2,12" />
+      </svg>
+      Enter Portal
+    </button>
   </div>
-  
+
   <script>
     (function() {
-      // Canvas setup
       const canvas = document.getElementById('grid-canvas');
       const ctx = canvas.getContext('2d');
       const content = document.querySelector('.content');
       const enterPortalBtn = document.getElementById('enter-portal');
-      
-      // Configuration
+
       const config = {
-        gridSpacing: 5, // Increased spacing to reduce visual complexity
+        gridSpacing: 5,
         glyphSize: 6,
-        waveAmplitude: 20, // Reduced from 40
-        waveFrequency: 0.03, // Slower frequency to reduce headache effect
-        promptFlickerInterval: 1200, // Increased from 600ms to reduce flickering
+        waveAmplitude: 20,
+        waveFrequency: 0.03,
+        promptFlickerInterval: 1200,
         plusColor: '#00ff9a',
         backgroundColor: '#050607',
         promptColor: '#ffffff',
         reduceMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-        globalWaveFrequency: 0.2, // Reduced from 0.4
-        globalWaveAmplitude: 2, // Reduced from 5
-        // Full screen ripple effect
-        rippleFrequency: 0.05, // Reduced from 0.1
-        rippleAmplitude: 8, // Reduced from 15
-        rippleDensity: 180, // Reduced density for cleaner look
-        screenColor: '#00ff9a', // Bright green for the full screen effect
-        textLines: 12, // Reduced from 20
-        textSpeed: 0.3, // Reduced from 0.5
-        screenGlowIntensity: 0.6 // Reduced from 0.8
+        globalWaveFrequency: 0.2,
+        globalWaveAmplitude: 2,
+        rippleFrequency: 0.05,
+        rippleAmplitude: 8,
+        rippleDensity: 180,
+        screenColor: '#00ff9a',
+        textLines: 12,
+        textSpeed: 0.3,
+        screenGlowIntensity: 0.6
       };
-      
-      // Timing and animation state
-      let startTime = null;
-      let lastTime = 0;
-      let promptFlickerTime = 0;
-      let offscreenCanvas = null;
-      let offscreenCtx = null;
-      let rows = [];
-      let flowingTextLines = [];
-      
-      // Sample AI prompts
+
+      let startTime = null, lastTime = 0, promptFlickerTime = 0;
+      let rows = [], flowingTextLines = [];
+
       const aiPrompts = [
         'analyze market trends',
         'summarize project status',
@@ -226,94 +231,53 @@
         'optimize resource allocation',
         'evaluate team performance'
       ];
-      
-      // Initialize
+
       function init() {
         setupCanvas();
         createEnhancedBackground();
         setupFlowingTextLines();
         setupEventListeners();
         startAnimation();
-        
-        // Show content after longer delay
-        setTimeout(() => {
-          content.style.opacity = '1';
-        }, 2000); // Changed to 2000ms (2s) as requested
+        setTimeout(() => content.style.opacity = '1', 2000);
       }
-      
-      // Set up the canvas
+
       function setupCanvas() {
-        // Set canvas size to match window with device pixel ratio for sharpness
         const dpr = window.devicePixelRatio || 1;
         canvas.width = window.innerWidth * dpr;
         canvas.height = window.innerHeight * dpr;
-        canvas.style.width = `${window.innerWidth}px`;
-        canvas.style.height = `${window.innerHeight}px`;
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
         ctx.scale(dpr, dpr);
-        
-        // We no longer need the offscreen canvas since we're drawing directly
-        // But we'll keep the structure in case we need it later
-        offscreenCanvas = document.createElement('canvas');
-        offscreenCanvas.width = canvas.width;
-        offscreenCanvas.height = canvas.height;
-        offscreenCtx = offscreenCanvas.getContext('2d');
-        offscreenCtx.scale(dpr, dpr);
       }
-      
-      // Create the enhanced background with grid and prompts
+
       function createEnhancedBackground() {
         rows = [];
         const numRows = Math.ceil(window.innerHeight / config.gridSpacing) + 1;
         const numCols = Math.ceil(window.innerWidth / config.gridSpacing) + 1;
-        
         for (let i = 0; i < numRows; i++) {
           const rowY = i * config.gridSpacing;
-          const hasPrompt = Math.random() < 0.1; // Reduced from 0.15 to have fewer prompts
-          const promptText = hasPrompt ? aiPrompts[Math.floor(Math.random() * aiPrompts.length)] : '';
-          const promptCol = hasPrompt ? Math.floor(Math.random() * (numCols - promptText.length - 5)) + 5 : -1;
-          
+          const hasPrompt = Math.random() < 0.1;
+          const promptText = hasPrompt
+            ? aiPrompts[Math.floor(Math.random() * aiPrompts.length)]
+            : '';
+          const promptCol = hasPrompt
+            ? Math.floor(Math.random() * (numCols - promptText.length - 5)) + 5
+            : -1;
           rows.push({
             y: rowY,
-            offset: 0,
-            phase: Math.random() * Math.PI * 2, // Random starting phase
-            speed: 0.3 + Math.random() * 0.3, // Reduced speed range for gentler animation
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.3 + Math.random() * 0.3,
             hasPrompt,
             promptText,
             promptCol,
-            promptOpacity: 0.4 + Math.random() * 0.4 // Reduced max opacity
+            promptOpacity: 0.4 + Math.random() * 0.4
           });
         }
       }
-      
-      // Pre-render the grid to offscreen canvas for efficiency
-      function preRenderGrid() {
-        offscreenCtx.fillStyle = config.backgroundColor;
-        offscreenCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        
-        // Apply a bright green background tint
-        offscreenCtx.fillStyle = 'rgba(0, 255, 154, 0.03)'; // Reduced opacity
-        offscreenCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        
-        offscreenCtx.font = `${config.glyphSize}px "SF Mono", Menlo, monospace`;
-        offscreenCtx.fillStyle = config.plusColor;
-        
-        // Draw a cleaner grid for a more electronic look
-        const gridSpacing = Math.max(2, Math.min(window.innerWidth, window.innerHeight) / config.rippleDensity);
-        
-        for (let y = 0; y < window.innerHeight; y += gridSpacing) {
-          for (let x = 0; x < window.innerWidth; x += gridSpacing) {
-            // Use '.' instead of '+' for a more electronic/digital look
-            offscreenCtx.fillText('.', x, y);
-          }
-        }
-      }
-      
-      // Setup flowing text lines for the CRT screen effect
+
       function setupFlowingTextLines() {
         flowingTextLines = [];
-        
-        // Sample text snippets that will flow across the screen
-        const textSnippets = [
+        const snippets = [
           "analyzing data...",
           "knowledge base connected",
           "processing information",
@@ -330,264 +294,128 @@
           "ai assistant activated",
           "initializing systems"
         ];
-        
-        // Create flowing text lines
         for (let i = 0; i < config.textLines; i++) {
           const y = Math.random() * window.innerHeight;
-          const text = textSnippets[Math.floor(Math.random() * textSnippets.length)];
-          const speed = (0.3 + Math.random() * 0.7) * config.textSpeed; // More varied but overall slower speeds
-          
-          flowingTextLines.push({
-            text,
-            x: -200 - Math.random() * 500, // Start off-screen to the left
-            y,
-            speed,
-            opacity: 0.2 + Math.random() * 0.3 // Lower opacity range
-          });
+          const text = snippets[Math.floor(Math.random() * snippets.length)];
+          const speed = (0.3 + Math.random() * 0.7) * config.textSpeed;
+          flowingTextLines.push({ text, x: -200 - Math.random() * 500, y, speed, opacity: 0.2 + Math.random() * 0.3 });
         }
       }
-      
-      // Handle window resize
+
       function handleResize() {
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
-        canvas.style.width = `${window.innerWidth}px`;
-        canvas.style.height = `${window.innerHeight}px`;
-        ctx.scale(dpr, dpr);
-        
-        // Recreate background
+        setupCanvas();
         createEnhancedBackground();
-        
-        // Re-setup flowing text lines
         setupFlowingTextLines();
       }
-      
-      // Set up event listeners
+
       function setupEventListeners() {
         window.addEventListener('resize', handleResize);
-        
-        enterPortalBtn.addEventListener('click', function(e) {
+        enterPortalBtn.addEventListener('click', e => {
           e.preventDefault();
-          window.location.href = ''; // Navigate to app directly, not in new tab
+          window.location.href = 'https://app.saros-ai.com/';
         });
       }
-      
-      // Start the animation
+
       function startAnimation() {
         startTime = performance.now();
         lastTime = startTime;
-        
         if (config.reduceMotion) {
-          // Draw static scene for reduced motion preference
           drawStaticScene();
         } else {
           requestAnimationFrame(animate);
         }
       }
-      
-      // Draw static scene for reduced motion
+
       function drawStaticScene() {
-        // Apply background
         ctx.fillStyle = config.backgroundColor;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        
-        // Apply CRT screen filter effect
         ctx.fillStyle = config.screenColor;
-        ctx.globalAlpha = 0.05; // Reduced from 0.1
+        ctx.globalAlpha = 0.05;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        ctx.globalAlpha = 1.0;
-        
-        // Draw static grid directly - using dots instead of plus signs for electronic look
-        ctx.font = `${config.glyphSize}px "SF Mono", Menlo, monospace`;
-        ctx.fillStyle = config.plusColor;
-        
-        const gridSpacing = Math.max(2, Math.min(window.innerWidth, window.innerHeight) / config.rippleDensity);
-        
-        for (let y = 0; y < window.innerHeight; y += gridSpacing) {
-          for (let x = 0; x < window.innerWidth; x += gridSpacing) {
-            // Add some variation to the grid
-            if (Math.random() > 0.5) {
-              ctx.fillText('.', x, y); // Use dot for more electronic look
-            }
-          }
-        }
-        
-        // Draw static prompts
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        
-        for (let row of rows) {
-          if (row.hasPrompt) {
-            const promptX = row.promptCol * config.gridSpacing;
-            ctx.fillText(row.promptText, promptX, row.y);
-          }
-        }
-        
-        // Draw some static flowing text
-        ctx.fillStyle = `rgba(0, 255, 154, 0.5)`;
-        
-        for (let line of flowingTextLines) {
-          const x = Math.random() * window.innerWidth;
-          ctx.fillText(line.text, x, line.y);
-        }
-        
-        // Add static glow effect
+        ctx.globalAlpha = 1;
+        drawRippleGrid(0);
         addScreenGlow();
       }
-      
-      // Animation loop
-      function animate(timestamp) {
-        if (!startTime) startTime = timestamp;
-        const elapsed = timestamp - startTime;
-        const deltaTime = timestamp - lastTime;
-        lastTime = timestamp;
-        
-        // Update prompt flicker timing
-        promptFlickerTime += deltaTime;
+
+      function animate(ts) {
+        const elapsed = ts - startTime;
+        const dt = ts - lastTime;
+        lastTime = ts;
+        promptFlickerTime += dt;
         if (promptFlickerTime > config.promptFlickerInterval) {
           promptFlickerTime = 0;
-          // Update prompt opacities
-          for (let row of rows) {
-            if (row.hasPrompt) {
-              row.promptOpacity = 0.4 + Math.random() * 0.4; // Reduced max opacity
-            }
-          }
+          rows.forEach(r => { if (r.hasPrompt) r.promptOpacity = 0.4 + Math.random() * 0.4; });
         }
-        
-        // Clear the canvas with background
         ctx.fillStyle = config.backgroundColor;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        
-        // Apply CRT screen filter effect
         ctx.fillStyle = config.screenColor;
-        ctx.globalAlpha = 0.05; // Reduced from 0.1
+        ctx.globalAlpha = 0.05;
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        ctx.globalAlpha = 1.0;
-        
-        // Apply global wave motion - much subtler
+        ctx.globalAlpha = 1;
         ctx.save();
         ctx.translate(0, Math.sin(elapsed * 0.0005 * config.globalWaveFrequency) * config.globalWaveAmplitude);
-        
-        // Draw ripple grid - the main green grid pattern without using offscreenCanvas
-        drawRippleGrid(timestamp);
-        
-        // Draw flowing text lines
-        drawFlowingText(elapsed, deltaTime);
-        
+        drawRippleGrid(ts);
+        drawFlowingText(elapsed, dt);
         ctx.restore();
-        
-        // Add screen glow effect
         addScreenGlow();
-        
-        // Continue animation loop
         requestAnimationFrame(animate);
       }
-      
-      // Add a CRT screen glow effect
-      function addScreenGlow() {
-        // Create a radial gradient for the glow
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        const radius = Math.max(window.innerWidth, window.innerHeight) * 0.8;
-        
-        const gradient = ctx.createRadialGradient(
-          centerX, centerY, 0,
-          centerX, centerY, radius
-        );
-        
-        gradient.addColorStop(0, `rgba(0, 255, 154, ${0.08 * config.screenGlowIntensity})`);
-        gradient.addColorStop(0.5, `rgba(0, 255, 154, ${0.04 * config.screenGlowIntensity})`);
-        gradient.addColorStop(1, 'rgba(0, 255, 154, 0)');
-        
-        // Apply the glow
-        ctx.fillStyle = gradient;
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        ctx.globalCompositeOperation = 'source-over';
-      }
-      
-      // Draw the grid with ripple effect
-      function drawRippleGrid(timestamp) {
-        // Apply a slight green tint to the background
-        ctx.fillStyle = 'rgba(0, 255, 154, 0.02)'; // Reduced opacity
-        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        
-        // Apply a ripple effect over the entire grid
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        
-        // Draw distorted grid points directly to the main canvas
-        const time = timestamp * 0.0007; // Slowed down significantly
-        
-        // Draw digital dots instead of plus signs for a more electronic look
+
+      function drawRippleGrid(ts) {
+        const time = ts * 0.0007;
         ctx.font = `${config.glyphSize}px "SF Mono", Menlo, monospace`;
         ctx.fillStyle = config.plusColor;
-        
-        const gridSpacing = Math.max(4, Math.min(window.innerWidth, window.innerHeight) / config.rippleDensity);
-        
-        for (let y = 0; y < window.innerHeight; y += gridSpacing) {
-          for (let x = 0; x < window.innerWidth; x += gridSpacing) {
-            // Calculate distance from center
-            const dx = x - centerX;
-            const dy = y - centerY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            // Calculate ripple effect with gentler motion
+        const spacing = Math.max(4, Math.min(window.innerWidth, window.innerHeight) / config.rippleDensity);
+        const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+        for (let y = 0; y < window.innerHeight; y += spacing) {
+          for (let x = 0; x < window.innerWidth; x += spacing) {
+            const dx = x - cx, dy = y - cy;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const ripple = Math.sin(dist * config.rippleFrequency - time) * config.rippleAmplitude;
             const angle = Math.atan2(dy, dx);
-            const rippleFactor = Math.sin(distance * config.rippleFrequency - time) * config.rippleAmplitude;
-            
-            // Apply ripple displacement
-            const displaceX = rippleFactor * Math.cos(angle);
-            const displaceY = rippleFactor * Math.sin(angle);
-            
-            // Use a digital dot instead of plus sign
-            if (Math.random() > 0.4) { // Show more dots for a denser but still clean grid
-              ctx.fillText('.', x + displaceX, y + displaceY);
-            }
+            const ix = x + ripple * Math.cos(angle);
+            const iy = y + ripple * Math.sin(angle);
+            if (Math.random() > 0.4) ctx.fillText('.', ix, iy);
           }
         }
-        
-        // Draw AI prompts that appear to float in the grid
-        ctx.font = `${config.glyphSize}px "SF Mono", Menlo, monospace`;
-        
-        for (let row of rows) {
-          if (row.hasPrompt) {
-            ctx.fillStyle = `rgba(255, 255, 255, ${row.promptOpacity})`;
-            const promptX = row.promptCol * config.gridSpacing + 
-                            Math.sin(time * row.speed * 0.3) * 10; // Gentler horizontal motion
-            ctx.fillText(row.promptText, promptX, row.y);
+        // prompts
+        rows.forEach(r => {
+          if (r.hasPrompt) {
+            ctx.fillStyle = `rgba(255,255,255,${r.promptOpacity})`;
+            const px = r.promptCol * config.gridSpacing + Math.sin(time * r.speed * 0.3) * 10;
+            ctx.fillText(r.promptText, px, r.y);
           }
-        }
+        });
       }
-      
-      // Draw flowing text across the screen
-      function drawFlowingText(elapsed, deltaTime) {
+
+      function drawFlowingText(el, dt) {
         ctx.font = `${config.glyphSize}px "SF Mono", Menlo, monospace`;
-        
-        // Update and draw each text line
-        for (let i = 0; i < flowingTextLines.length; i++) {
-          const line = flowingTextLines[i];
-          
-          // Update position - slower movement
-          line.x += line.speed * deltaTime * 0.05; // Reduced from 0.1
-          
-          // If text has moved off screen, reset to start with new text
+        flowingTextLines.forEach(line => {
+          line.x += line.speed * dt * 0.05;
           if (line.x > window.innerWidth + 100) {
             line.x = -200 - Math.random() * 300;
             line.y = Math.random() * window.innerHeight;
-            line.opacity = 0.2 + Math.random() * 0.3; // Lower opacity range
+            line.opacity = 0.2 + Math.random() * 0.3;
           }
-          
-          // Set text style with fading opacity near the edges
-          const distFromCenter = Math.abs((line.x / window.innerWidth) - 0.5) * 2; // 0 at center, 1 at edges
-          const edgeFade = Math.max(0, 1 - Math.pow(distFromCenter, 1.5));
-          
-          ctx.fillStyle = `rgba(0, 255, 154, ${line.opacity * edgeFade})`;
+          const fade = 1 - Math.pow(Math.abs((line.x / window.innerWidth) - 0.5) * 2, 1.5);
+          ctx.fillStyle = `rgba(0,255,154,${line.opacity * fade})`;
           ctx.fillText(line.text, line.x, line.y);
-        }
+        });
       }
-      
-      // Initialize on load
+
+      function addScreenGlow() {
+        const cx = window.innerWidth/2, cy = window.innerHeight/2;
+        const r  = Math.max(window.innerWidth, window.innerHeight)*0.8;
+        const g  = ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+        g.addColorStop(0,   `rgba(0,255,154,${0.08*config.screenGlowIntensity})`);
+        g.addColorStop(0.5, `rgba(0,255,154,${0.04*config.screenGlowIntensity})`);
+        g.addColorStop(1,   'rgba(0,255,154,0)');
+        ctx.fillStyle = g;
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
       window.addEventListener('DOMContentLoaded', init);
     })();
   </script>
